@@ -14,6 +14,7 @@ class TestApp < Minitest::Test
   def test_root
     get "/"
     assert_equal 200, last_response.status
-    assert_equal "ok", last_response.body
+    assert_includes last_response.body, "<title>Domus</title>"
+    assert_includes last_response.body, "ok"
   end
 end
