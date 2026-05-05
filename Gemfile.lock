@@ -1,3 +1,11 @@
+GIT
+  remote: https://github.com/kejadlen/phlex.git
+  revision: 671ccc021beca34d860ff4751810cff104a75c5c
+  specs:
+    phlex (2.4.1)
+      refract (~> 1.0)
+      zeitwerk (~> 2.7)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -7,9 +15,6 @@ GEM
       drb (~> 2.0)
       prism (~> 1.5)
     nio4r (2.7.5)
-    phlex (2.4.1)
-      refract (~> 1.0)
-      zeitwerk (~> 2.7)
     prism (1.9.0)
     puma (8.0.1)
       nio4r (~> 2.0)
@@ -52,7 +57,7 @@ PLATFORMS
 
 DEPENDENCIES
   minitest
-  phlex
+  phlex!
   puma
   rack-test
   rackup
@@ -61,8 +66,5 @@ DEPENDENCIES
   sequel
   sqlite3
 
-RUBY VERSION
-   ruby 3.3.8p144
-
 BUNDLED WITH
-   2.6.7
+  4.0.11

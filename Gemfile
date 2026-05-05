@@ -2,12 +2,12 @@
 
 source "https://rubygems.org"
 
-ruby "~> 3.3"
-
 gem "roda"
 gem "puma"
 gem "rackup"
-gem "phlex"
+# Fork silences the method-redefinition warnings phlex 2.4 emits
+# under -w when its element methods are first generated.
+gem "phlex", git: "https://github.com/kejadlen/phlex.git"
 gem "sequel"
 gem "sqlite3"
 gem "rake"
