@@ -17,6 +17,7 @@ class Views::Layout < Phlex::HTML
     html(lang: "en") do
       head do
         title { @title }
+        script defer: true, src: "https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
       end
 
       body do
