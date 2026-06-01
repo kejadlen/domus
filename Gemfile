@@ -15,4 +15,5 @@ gem "rake"
 group :development, :test do
   gem "minitest"
   gem "rack-test"
+  gem "ruby-lsp"
 end

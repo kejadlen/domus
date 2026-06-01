@@ -11,6 +11,8 @@ GEM
   specs:
     bigdecimal (4.1.2)
     drb (2.2.3)
+    language_server-protocol (3.17.0.5)
+    logger (1.7.0)
     minitest (6.0.6)
       drb (~> 2.0)
       prism (~> 1.5)
@@ -24,11 +26,19 @@ GEM
     rackup (2.3.1)
       rack (>= 3)
     rake (13.4.2)
+    rbs (4.0.2)
+      logger
+      prism (>= 1.6.0)
+      tsort
     refract (1.1.0)
       prism
       zeitwerk
     roda (3.103.0)
       rack
+    ruby-lsp (0.26.9)
+      language_server-protocol (~> 3.17.0)
+      prism (>= 1.2, < 2.0)
+      rbs (>= 3, < 5)
     sequel (5.104.0)
       bigdecimal
     sqlite3 (2.9.3-aarch64-linux-gnu)
@@ -41,6 +51,7 @@ GEM
     sqlite3 (2.9.3-x86_64-darwin)
     sqlite3 (2.9.3-x86_64-linux-gnu)
     sqlite3 (2.9.3-x86_64-linux-musl)
+    tsort (0.2.0)
     zeitwerk (2.7.5)
 
 PLATFORMS
@@ -63,6 +74,7 @@ DEPENDENCIES
   rackup
   rake
   roda
+  ruby-lsp
   sequel
   sqlite3
 
