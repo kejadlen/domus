@@ -3,6 +3,17 @@
 require "rake/testtask"
 require_relative "lib/db"
 
+BUNDLE_INSTALL_MARKER = Pathname.new(".bundle/installed")
+
+file BUNDLE_INSTALL_MARKER do
+  sh "bundle install"
+  sh "bundle binstubs --all"
+  mkdir_p BUNDLE_INSTALL_MARKER.dirname
+  touch BUNDLE_INSTALL_MARKER
+end
+
+task setup: BUNDLE_INSTALL_MARKER
+
 Rake::TestTask.new(:test) do |t|
   t.libs << "test"
   t.libs << "lib"
