@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-require "rake/testtask"
+require "minitest/test_task"
+
 require_relative "lib/db"
 
 BUNDLE_INSTALL_MARKER = Pathname.new(".bundle/installed")
@@ -14,11 +15,7 @@ end
 
 task setup: BUNDLE_INSTALL_MARKER
 
-Rake::TestTask.new(:test) do |t|
-  t.libs << "test"
-  t.libs << "lib"
-  t.test_files = FileList["test/**/test_*.rb"]
-end
+Minitest::TestTask.create(:test)
 
 task default: :test
 
