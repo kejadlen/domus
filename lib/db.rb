@@ -2,6 +2,7 @@
 
 require "sequel"
 require "sequel/extensions/migration"
+
 require_relative "config"
 
-DB = Sequel.sqlite(Config.load.database_url)
+DB = Sequel.sqlite(Config.from_env.database_url)

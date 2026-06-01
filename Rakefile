@@ -19,6 +19,14 @@ Minitest::TestTask.create(:test)
 
 task default: :test
 
+desc "Start dev server with pre-seeded in-memory database"
+task :dev do
+  Sequel::Migrator.run(DB, "db/migrate") unless Dir.empty?("db/migrate")
+
+  require "rack"
+  Rack::Server.start(config: "config.ru", Port: 9292)
+end
+
 namespace :db do
   desc "Run pending migrations"
   task :migrate do
