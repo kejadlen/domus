@@ -3,4 +3,4 @@
 require "sequel"
 require "sequel/extensions/migration"
 
-DB = Sequel.connect("sqlite://db/domus.db")
+DB = Sequel.sqlite(ENV.fetch("DATABASE_URL", "db/domus.db"))
