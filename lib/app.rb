@@ -1,20 +1,15 @@
 # frozen_string_literal: true
 
-require "roda"
-require_relative "views/layout"
+require "sequel"
+require_relative "config"
 
 module Domus
-  class App < Roda
-    route do |r|
-      r.root do
-        render_with_layout { "ok" }
-      end
-    end
+  class App
+    attr_reader :config, :db
 
-    private
-
-    def render_with_layout(&block)
-      Views::Layout.new(&block).call
+    def initialize(config = Config.env)
+      @config = config
+      @db = Sequel.sqlite(config.database_url)
     end
   end
 end

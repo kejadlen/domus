@@ -2,13 +2,12 @@
 
 require_relative "test_helper"
 require "rack/test"
-require_relative "../lib/app"
 
 class TestApp < Minitest::Test
   include Rack::Test::Methods
 
   def app
-    Domus::App
+    Domus::Web
   end
 
   def test_root
