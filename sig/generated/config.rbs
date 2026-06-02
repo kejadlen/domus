@@ -4,12 +4,14 @@ module Domus
   class Config < Data
     attr_reader database_url(): String
 
-    def self.new: (String database_url) -> instance
-                | (database_url: String) -> instance
+    attr_reader storage_path(): String
 
-    def self.members: () -> [ :database_url ]
+    def self.new: (String database_url, String storage_path) -> instance
+                | (database_url: String, storage_path: String) -> instance
 
-    def members: () -> [ :database_url ]
+    def self.members: () -> [ :database_url, :storage_path ]
+
+    def members: () -> [ :database_url, :storage_path ]
   end
 
   class Config
