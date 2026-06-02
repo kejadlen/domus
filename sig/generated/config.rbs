@@ -1,0 +1,19 @@
+# Generated from lib/config.rb with RBS::Inline
+
+module Domus
+  class Config < Data
+    attr_reader database_url(): String
+
+    def self.new: (String database_url) -> instance
+                | (database_url: String) -> instance
+
+    def self.members: () -> [ :database_url ]
+
+    def members: () -> [ :database_url ]
+  end
+
+  class Config
+    # : () -> Config
+    def self.env: () -> Config
+  end
+end

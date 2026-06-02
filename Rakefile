@@ -7,20 +7,23 @@ require "sequel/extensions/migration"
 DOMUS_APP = Domus::App.new
 DB = DOMUS_APP.db
 
-BUNDLE_INSTALL_MARKER = Pathname.new(".bundle/installed")
-
-file BUNDLE_INSTALL_MARKER do
-  sh "bundle install"
+desc "Create bundler binstubs (runs when Gemfile.lock changes)"
+file ".direnv/.bundled" => ["Gemfile.lock"] do
   sh "bundle binstubs --all"
-  mkdir_p BUNDLE_INSTALL_MARKER.dirname
-  touch BUNDLE_INSTALL_MARKER
+  touch ".direnv/.bundled"
 end
 
-task setup: BUNDLE_INSTALL_MARKER
+task binstubs: ".direnv/.bundled"
 
 Minitest::TestTask.create(:test)
 
-task default: :test
+desc "Generate RBS from inline annotations and run Steep type checker"
+task :check do
+  sh "rbs-inline --output lib/"
+  sh "steep check"
+end
+
+task default: %i[test check]
 
 desc "Start dev server"
 task :dev do
