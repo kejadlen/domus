@@ -12,12 +12,18 @@ Scope is one household. No multi-tenancy, no public sharing, no login screen —
 
 ## Domain model
 
+### Tags
+
+Any entity in the system can have tags. A tag is a short label — "garage," "kitchen," "pending." Tags also support a `key:value` form — "location:garage," "status:sold," "year:2023" — where the key names a dimension and the value qualifies it. Plain and key-value tags coexist freely on the same entity.
+
+Key-value tags make it possible to group and filter by structured dimensions without dedicated schema fields. "location:garage" is both the label "garage" and a statement that the relevant dimension is "location."
+
 ### Assets
 
 An **asset** is something I own worth tracking. Each asset has:
 
 - a markdown description, with the first line as the display name
-- tags, primarily for location ("garage," "kitchen drawer")
+- tags, primarily for location
 - purchase information: where I bought it, when, how much, optional receipt
 - a maintenance log for things that need periodic attention
 
