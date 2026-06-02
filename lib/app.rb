@@ -3,16 +3,18 @@
 require "roda"
 require_relative "views/layout"
 
-class App < Roda
-  route do |r|
-    r.root do
-      render_with_layout { "ok" }
+module Domus
+  class App < Roda
+    route do |r|
+      r.root do
+        render_with_layout { "ok" }
+      end
     end
-  end
 
-  private
+    private
 
-  def render_with_layout(&block)
-    Views::Layout.new(&block).call
+    def render_with_layout(&block)
+      Views::Layout.new(&block).call
+    end
   end
 end

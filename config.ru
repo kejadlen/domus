@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "app"
+require_relative "lib/app"
 
-run App
+run Domus::App

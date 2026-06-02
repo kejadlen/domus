@@ -9,7 +9,7 @@ class TestAuth < Minitest::Test
 
   def app
     inner = proc { |env| [200, {}, ["hello #{env['domus.user']}"]] }
-    Middleware::Auth.new(inner)
+    Domus::Middleware::Auth.new(inner)
   end
 
   def test_allows_request_with_header

@@ -21,7 +21,7 @@ task default: :test
 
 desc "Start dev server with pre-seeded in-memory database"
 task :dev do
-  Sequel::Migrator.run(DB, "db/migrate") unless Dir.empty?("db/migrate")
+  Sequel::Migrator.run(Domus::DB, "db/migrate") unless Dir.empty?("db/migrate")
 
   require "rack"
   Rack::Server.start(config: "config.ru", Port: 9292)
@@ -33,16 +33,16 @@ namespace :db do
     if Dir.empty?("db/migrate")
       puts "No migrations."
     else
-      Sequel::Migrator.run(DB, "db/migrate")
+      Sequel::Migrator.run(Domus::DB, "db/migrate")
       puts "Migrated."
     end
   end
 
   desc "Rollback the last migration"
   task :rollback do
-    version = DB[:schema_migrations].order(Sequel.desc(:filename)).limit(1).get(:filename)
+    version = Domus::DB[:schema_migrations].order(Sequel.desc(:filename)).limit(1).get(:filename)
     if version
-      Sequel::Migrator.run(DB, "db/migrate", target: 0, current: version.sub(/\.rb$/, ""))
+      Sequel::Migrator.run(Domus::DB, "db/migrate", target: 0, current: version.sub(/\.rb$/, ""))
       puts "Rolled back #{version}."
     else
       puts "Nothing to rollback."

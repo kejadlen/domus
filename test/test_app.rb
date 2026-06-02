@@ -8,7 +8,7 @@ class TestApp < Minitest::Test
   include Rack::Test::Methods
 
   def app
-    App
+    Domus::App
   end
 
   def test_root

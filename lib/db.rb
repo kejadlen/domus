@@ -5,4 +5,6 @@ require "sequel/extensions/migration"
 
 require_relative "config"
 
-DB = Sequel.sqlite(Config.from_env.database_url)
+module Domus
+  DB = Sequel.sqlite(Config.from_env.database_url)
+end
