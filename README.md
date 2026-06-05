@@ -31,7 +31,7 @@ Purchase dates are fuzzy. Some receipts are decades old, and forcing an exact da
 
 ### Documents
 
-A **document** is any file the household wants to keep findable — tax returns, school records, contracts, warranties, manuals, medical paperwork. Supported file types include PDFs, images, and emails. Documents don't have to relate to the home itself; the inventory is one source of documents, not the only one. Documents have tags. OCR comes later.
+A **document** is any file the household wants to keep findable — tax returns, school records, contracts, warranties, manuals, medical paperwork. Supported file types include PDFs and images. Documents don't have to relate to the home itself; the inventory is one source of documents, not the only one. Documents have tags. OCR comes later.
 
 Where a document does relate to an asset (a receipt, a manual), the two cross-reference each other.
 
