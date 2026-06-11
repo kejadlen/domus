@@ -1,6 +1,8 @@
-FROM ruby:3.3-slim AS base
+FROM ruby:4.0-slim AS base
 
+# git is required for git-sourced gem dependencies.
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
     libsqlite3-0 \
     && rm -rf /var/lib/apt/lists/*
 

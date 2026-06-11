@@ -1,0 +1,27 @@
+# fly.toml app configuration file generated for domus-coral-raindrop-3999 on 2026-06-11T06:58:51-07:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'domus-demo'
+primary_region = 'sjc'
+
+[build]
+  dockerfile = 'Dockerfile'
+
+[env]
+  RACK_ENV = 'production'
+
+[http_service]
+  internal_port = 9292
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
+  memory_mb = 256
