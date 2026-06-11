@@ -41,9 +41,6 @@ module Domus
       upload = params["file"]
       return unless upload.is_a?(Hash) && upload[:tempfile]
 
-      name = params["name"].to_s.strip
-      name = upload[:filename].to_s.gsub(/\.[^.]+$/, "").gsub(/[-_]/, " ").strip if name.empty?
-
       ext = File.extname(upload[:filename].to_s)
       filename = "#{Time.now.strftime("%Y%m%d%H%M%S%L")}#{ext}"
       dest_dir = File.join(storage_path, "documents")
@@ -55,7 +52,6 @@ module Domus
       db[:documents].insert(
         path: File.join("documents", filename),
         kind: upload[:type].to_s,
-        name: name,
         received_at: now,
         created_at: now
       )

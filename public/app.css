@@ -226,38 +226,6 @@ html, body {
   gap: var(--space-m);
 }
 
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3xs);
-}
-
-.field-label {
-  font-family: var(--font-mono);
-  font-size: var(--step--2);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--ink-2);
-}
-
-.field-input {
-  border: 1px solid var(--line-2);
-  border-radius: calc(var(--radius) - 3px);
-  background: var(--surface);
-  padding: var(--space-xs) var(--space-s);
-  font-family: var(--font-ui);
-  font-size: var(--step-0);
-  color: var(--ink);
-  width: 100%;
-  transition: border-color .15s ease, box-shadow .15s ease;
-  outline: none;
-}
-
-.field-input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-soft);
-}
-
 .btn-row {
   display: flex;
   align-items: center;

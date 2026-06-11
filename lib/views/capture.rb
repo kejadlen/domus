@@ -10,13 +10,11 @@ module Domus
           return {
             state: 'capture',
             preview: null,
-            name: '',
             dragging: false,
 
             handleFile(file) {
               if (!file) return;
               this.preview = file.type.startsWith('image/') ? URL.createObjectURL(file) : null;
-              this.name = file.name.replace(/\\.[^.]+$/, '').replace(/[-_]/g, ' ');
               this.state = 'saved';
             },
 
@@ -37,7 +35,6 @@ module Domus
               if (this.preview) URL.revokeObjectURL(this.preview);
               this.state = 'capture';
               this.preview = null;
-              this.name = '';
               this.$refs.fileInput.value = '';
               this.$refs.cameraInput.value = '';
             }
@@ -162,20 +159,6 @@ module Domus
               end
 
               div(class: "save-form") do
-                div(class: "field") do
-                  label(class: "field-label", for: "doc-name") { plain "name" }
-                  input(
-                    type: "text",
-                    id: "doc-name",
-                    name: "name",
-                    class: "field-input",
-                    "x-model": "name",
-                    placeholder: "Document name",
-                    required: true,
-                    "x-effect": "if (state === 'saved') $nextTick(() => $el.focus())"
-                  )
-                end
-
                 div(class: "btn-row") do
                   button(type: "submit", class: "btn btn-primary") do
                     check_icon
