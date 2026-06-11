@@ -39,7 +39,7 @@ module Domus
 
     def save_document(params)
       upload = params["file"]
-      return unless upload.is_a?(Hash) && upload[:tempfile]
+      raise ArgumentError, "missing file upload" unless upload.is_a?(Hash) && upload[:tempfile]
 
       ext = File.extname(upload[:filename].to_s)
       filename = "#{Time.now.strftime("%Y%m%d%H%M%S%L")}#{ext}"
