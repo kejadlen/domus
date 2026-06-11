@@ -17,11 +17,11 @@ jobs:
     permissions:
       contents: read # checkout.
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           persist-credentials: false
 
-      - uses: ruby/setup-ruby@7bae1d5a759a9b3b01cbd6c025bd6dce31f5cf72 # v1.206.0
+      - uses: ruby/setup-ruby@e65c17d16e57e481586a6a5a0282698790062f92 # v1
         with:
           bundler-cache: true
 
