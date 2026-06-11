@@ -32,8 +32,8 @@
   --accent-ink: oklch(0.42 0.17 290);
   --accent-soft:oklch(0.96 0.03 290);
   --radius:     10px;
-  --font-ui:    "Hanken Grotesk", system-ui, -apple-system, sans-serif;
-  --font-mono:  "JetBrains Mono", ui-monospace, "SF Mono", monospace;
+  --font-ui:    system-ui, -apple-system, sans-serif;
+  --font-mono:  ui-monospace, "SF Mono", monospace;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
