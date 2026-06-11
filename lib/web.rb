@@ -7,9 +7,12 @@ require_relative "views/capture"
 
 module Domus
   class Web < Roda
+    plugin :public
     plugin :all_verbs
 
     route do |r|
+      r.public
+
       r.root do
         r.get do
           Views::Capture.new.call
