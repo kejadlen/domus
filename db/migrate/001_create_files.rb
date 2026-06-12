@@ -4,8 +4,7 @@ Sequel.migration do
   change do
     create_table(:files) do
       primary_key :id
-      String :path, null: false
-      String :kind, null: false
+      String :extension, null: false
       DateTime :received_at, null: false
       DateTime :created_at, null: false
     end

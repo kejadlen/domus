@@ -42,19 +42,16 @@ module Domus
       raise ArgumentError, "missing file upload" unless upload.is_a?(Hash) && upload[:tempfile]
 
       ext = ::File.extname(upload[:filename].to_s)
-      filename = "#{Time.now.strftime("%Y%m%d%H%M%S%L")}#{ext}"
-      dest_dir = ::File.join(storage_path, "files")
-      FileUtils.mkdir_p(dest_dir)
-      dest = ::File.join(dest_dir, filename)
-      FileUtils.cp(upload[:tempfile].path, dest)
-
       now = Time.now
-      db[:files].insert(
-        path: ::File.join("files", filename),
-        kind: upload[:type].to_s,
+      id = db[:files].insert(
+        extension: ext,
         received_at: now,
         created_at: now
       )
+
+      dest_dir = ::File.join(storage_path, "files")
+      FileUtils.mkdir_p(dest_dir)
+      FileUtils.cp(upload[:tempfile].path, ::File.join(dest_dir, "#{id}#{ext}"))
     end
   end
 end
