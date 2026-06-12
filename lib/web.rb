@@ -6,9 +6,29 @@ require_relative "views/layout"
 require_relative "views/capture"
 
 module Domus
+  # Raised when a request can't be processed because of client input. The
+  # error_handler plugin renders it with the HTTP status it carries.
+  class ClientError < StandardError
+    attr_reader :status
+
+    def initialize(message, status: 422)
+      super(message)
+      @status = status
+    end
+  end
+
   class Web < Roda
     plugin :public
     plugin :all_verbs
+    plugin :error_handler do |e|
+      raise e unless e.is_a?(ClientError)
+
+      response.status = e.status
+      e.message
+    end
+
+    IMAGE_EXTENSIONS = %w[.jpg .jpeg .png .gif .webp .heic .heif].freeze
+    MAX_UPLOAD_BYTES = 25 * 1024 * 1024
 
     route do |r|
       r.public
@@ -16,11 +36,6 @@ module Domus
       r.root do
         r.get do
           Views::Capture.new.call
-        end
-
-        r.post do
-          save_file(r.params)
-          r.redirect "/"
         end
       end
 
@@ -37,16 +52,20 @@ module Domus
     def app = opts.fetch(:app)
     def db = app.db
 
+    # Persists an uploaded image, raising ClientError when the upload is
+    # rejected so the error_handler plugin can render the right status.
     def save_file(params)
       upload = params["file"]
-      raise ArgumentError, "missing file upload" unless upload.is_a?(Hash) && upload[:tempfile]
-      raise ArgumentError, "only images are accepted" unless upload[:type].to_s.start_with?("image/")
+      raise ClientError, "Choose a file to upload." unless upload.is_a?(Hash) && upload[:tempfile]
+      raise ClientError, "Only image files are accepted." unless upload[:type].to_s.start_with?("image/")
 
-      ext = ::File.extname(upload[:filename].to_s)
-      id = db[:files].insert(
-        extension: ext,
-        created_at: Time.now
-      )
+      # The browser-supplied type is spoofable, so also require a known
+      # image extension before we trust and store the file.
+      ext = ::File.extname(upload[:filename].to_s).downcase
+      raise ClientError, "That image format isn't supported." unless IMAGE_EXTENSIONS.include?(ext)
+      raise ClientError, "That image is too large (25 MB max)." if upload[:tempfile].size > MAX_UPLOAD_BYTES
+
+      id = db[:files].insert(extension: ext, created_at: Time.now)
 
       dest = app.file_path(id: id, extension: ext)
       FileUtils.mkdir_p(::File.dirname(dest))
