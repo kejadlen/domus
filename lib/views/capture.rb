@@ -59,7 +59,7 @@ module Domus
               capture: "environment",
               class: "sr-only",
               "x-ref": "cameraInput",
-              "@change": "onFileInput($event)"
+              "@change": "onCameraInput($event)"
             )
             input(
               type: "file",
@@ -101,7 +101,8 @@ module Domus
               "x-show": "state === 'saved'",
               method: "post",
               action: "/files",
-              enctype: "multipart/form-data"
+              enctype: "multipart/form-data",
+              "@submit": "onSubmit()"
             ) do
               div(class: "preview-zone") do
                 img(
