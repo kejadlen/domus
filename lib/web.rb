@@ -65,11 +65,21 @@ module Domus
       raise ClientError, "That image format isn't supported." unless IMAGE_EXTENSIONS.include?(ext)
       raise ClientError, "That image is too large (25 MB max)." if upload[:tempfile].size > MAX_UPLOAD_BYTES
 
-      id = db[:files].insert(extension: ext, created_at: Time.now)
+      asset_names = Array(params["asset_names"]).flatten.map(&:strip).reject(&:empty?)
 
-      dest = app.file_path(id: id, extension: ext)
-      FileUtils.mkdir_p(::File.dirname(dest))
-      FileUtils.cp(upload[:tempfile].path, dest)
+      db.transaction do
+        file_id = db[:files].insert(extension: ext, created_at: Time.now)
+
+        dest = app.file_path(id: file_id, extension: ext)
+        FileUtils.mkdir_p(::File.dirname(dest))
+        FileUtils.cp(upload[:tempfile].path, dest)
+
+        now = Time.now
+        asset_names.each do |name|
+          asset_id = db[:assets].insert(name: name, created_at: now)
+          db[:asset_attachments].insert(asset_id: asset_id, file_id: file_id, created_at: now)
+        end
+      end
     end
   end
 end

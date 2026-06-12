@@ -4,6 +4,7 @@ function captureApp() {
     preview: null,
     dragging: false,
     activeRef: null,
+    assetNames: [],
 
     handleFile(file, ref) {
       if (!file) return;
@@ -34,6 +35,7 @@ function captureApp() {
       this.state = 'capture';
       this.preview = null;
       this.activeRef = null;
+      this.assetNames = [];
       this.$refs.fileInput.disabled = false;
       this.$refs.cameraInput.disabled = false;
       this.$refs.fileInput.value = '';

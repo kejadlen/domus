@@ -119,6 +119,30 @@ module Domus
               end
 
               div(class: "save-form") do
+                div(class: "asset-inputs") do
+                  p(class: "asset-inputs-label") { plain "Create assets (optional)" }
+                  template("x-for": "(_, i) in assetNames", ":key": "i") do
+                    div(class: "asset-input-row") do
+                      input(
+                        type: "text",
+                        name: "asset_names[]",
+                        placeholder: "Asset name",
+                        "@input": "assetNames[i] = $event.target.value"
+                      )
+                      button(
+                        type: "button",
+                        class: "btn-remove-asset",
+                        "@click": "assetNames.splice(i, 1)"
+                      ) { plain "×" }
+                    end
+                  end
+                  button(
+                    type: "button",
+                    class: "asset-add-btn",
+                    "@click": "assetNames.push('')"
+                  ) { plain "+ Add asset" }
+                end
+
                 div(class: "btn-row") do
                   button(type: "submit", class: "btn btn-primary") do
                     icon("check")
