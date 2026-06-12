@@ -232,6 +232,81 @@ html, body {
 
 .btn-row .btn-primary { flex: 1; }
 
+/* ---- asset inputs ---- */
+.asset-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.asset-inputs-label {
+  margin: 0;
+  font-size: var(--step--1);
+  color: var(--ink-3);
+  font-weight: 500;
+}
+
+.asset-input-row {
+  display: flex;
+  gap: var(--space-2xs);
+  align-items: center;
+}
+
+.asset-input-row input[type="text"] {
+  flex: 1;
+  min-width: 0;
+  padding: var(--space-2xs) var(--space-xs);
+  border: 1px solid var(--line-2);
+  border-radius: calc(var(--radius) - 2px);
+  font-family: var(--font-ui);
+  font-size: var(--step-0);
+  color: var(--ink);
+  background: var(--surface);
+  outline: none;
+}
+
+.asset-input-row input[type="text"]:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-soft);
+}
+
+.btn-remove-asset {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink-3);
+  font-size: var(--step-0);
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .12s ease, color .12s ease;
+}
+
+.btn-remove-asset:hover {
+  background: var(--fill-2);
+  color: var(--ink);
+}
+
+.asset-add-btn {
+  align-self: flex-start;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-family: var(--font-ui);
+  font-size: var(--step--1);
+  font-weight: 550;
+  color: var(--accent-ink);
+  cursor: pointer;
+}
+
+.asset-add-btn:hover { text-decoration: underline; }
+
 /* ---- svg icons ---- */
 .icon { flex: none; }
 

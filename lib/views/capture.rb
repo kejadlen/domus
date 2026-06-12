@@ -138,7 +138,7 @@ module Domus
                   end
                   button(
                     type: "button",
-                    class: "btn btn-ghost btn-small",
+                    class: "asset-add-btn",
                     "@click": "assetNames.push('')"
                   ) { plain "+ Add asset" }
                 end
