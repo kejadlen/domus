@@ -136,8 +136,12 @@ module Domus
         end
       end
 
+      ICONS = Hash.new do |cache, name|
+        cache[name] = File.read(File.join(ICONS_DIR, "#{name}.svg")).freeze
+      end
+
       def icon(name)
-        raw safe(File.read(File.join(ICONS_DIR, "#{name}.svg")))
+        raw safe(ICONS[name])
       end
     end
   end

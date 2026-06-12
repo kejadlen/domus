@@ -100,8 +100,6 @@ html, body {
   box-shadow: 0 4px 0 var(--ink), 0 8px 0 var(--accent);
 }
 
-.logo-dot { color: var(--accent); }
-
 /* ---- main content ---- */
 .content {
   flex: 1;
