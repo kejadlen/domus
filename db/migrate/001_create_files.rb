@@ -5,7 +5,6 @@ Sequel.migration do
     create_table(:files) do
       primary_key :id
       String :extension, null: false
-      DateTime :received_at, null: false
       DateTime :created_at, null: false
     end
   end

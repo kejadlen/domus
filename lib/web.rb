@@ -43,11 +43,9 @@ module Domus
       raise ArgumentError, "only images are accepted" unless upload[:type].to_s.start_with?("image/")
 
       ext = ::File.extname(upload[:filename].to_s)
-      now = Time.now
       id = db[:files].insert(
         extension: ext,
-        received_at: now,
-        created_at: now
+        created_at: Time.now
       )
 
       dest = app.file_path(id: id, extension: ext)
