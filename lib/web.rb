@@ -34,8 +34,9 @@ module Domus
 
     private
 
-    def db = opts[:db] || opts[:app].db
-    def storage_path = opts.fetch(:app).config.storage_path
+    def app = opts.fetch(:app)
+    def db = app.db
+    def storage_path = app.config.storage_path
 
     def save_file(params)
       upload = params["file"]
