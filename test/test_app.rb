@@ -65,43 +65,43 @@ class TestApp < Minitest::Test
     assert_equal 0, domus.db[:files].count
   end
 
-  def test_root_shows_assets
-    domus.db[:assets].insert(name: "Camera", created_at: Time.now)
-
-    get "/"
-
-    assert_equal 200, last_response.status
-    assert_includes last_response.body, "Camera"
-  end
-
-  def test_upload_with_asset_ids_creates_attachments
-    asset_id = domus.db[:assets].insert(name: "Laptop", created_at: Time.now)
-
-    post "/files", "file" => upload("photo.png", "image/png", "bytes"), "asset_ids[]" => asset_id.to_s
+  def test_upload_with_asset_name_creates_asset_and_attachment
+    post "/files", "file" => upload("photo.png", "image/png", "bytes"), "asset_names[]" => "Laptop"
 
     assert_equal 302, last_response.status
+    asset = domus.db[:assets].first
+    refute_nil asset
+    assert_equal "Laptop", asset[:name]
     file = domus.db[:files].first
     attachment = domus.db[:asset_attachments].first
     refute_nil attachment
-    assert_equal asset_id, attachment[:asset_id]
+    assert_equal asset[:id], attachment[:asset_id]
     assert_equal file[:id], attachment[:file_id]
   end
 
-  def test_upload_with_multiple_asset_ids_creates_all_attachments
-    id1 = domus.db[:assets].insert(name: "Camera", created_at: Time.now)
-    id2 = domus.db[:assets].insert(name: "Laptop", created_at: Time.now)
-
+  def test_upload_with_multiple_asset_names_creates_all
     post "/files", "file" => upload("photo.png", "image/png", "bytes"),
-      "asset_ids[]" => [id1.to_s, id2.to_s]
+      "asset_names[]" => ["Camera", "Laptop"]
 
     assert_equal 302, last_response.status
+    assert_equal 2, domus.db[:assets].count
     assert_equal 2, domus.db[:asset_attachments].count
   end
 
-  def test_upload_without_asset_ids_creates_no_attachments
+  def test_upload_with_blank_asset_names_ignored
+    post "/files", "file" => upload("photo.png", "image/png", "bytes"),
+      "asset_names[]" => ["", "  "]
+
+    assert_equal 302, last_response.status
+    assert_equal 0, domus.db[:assets].count
+    assert_equal 0, domus.db[:asset_attachments].count
+  end
+
+  def test_upload_without_asset_names_creates_no_assets
     post "/files", "file" => upload("photo.png", "image/png", "bytes")
 
     assert_equal 302, last_response.status
+    assert_equal 0, domus.db[:assets].count
     assert_equal 0, domus.db[:asset_attachments].count
   end
 
