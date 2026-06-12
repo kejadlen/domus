@@ -14,6 +14,6 @@ class TestApp < Minitest::Test
     get "/"
     assert_equal 200, last_response.status
     assert_includes last_response.body, "Domus"
-    assert_includes last_response.body, "Add a document"
+    assert_includes last_response.body, "Add an image"
   end
 end
