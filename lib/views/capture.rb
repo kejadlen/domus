@@ -37,7 +37,7 @@ module Domus
         header(class: "topbar") do
           a(href: "/", class: "logo") do
             span(class: "logo-mark")
-            plain "domus."
+            plain "domus"
           end
         end
       end
