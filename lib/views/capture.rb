@@ -52,24 +52,6 @@ module Domus
             "@drop.prevent": "onDrop($event)",
             ":data-drag": "dragging ? 'over' : null"
           ) do
-            input(
-              type: "file",
-              name: "file",
-              accept: "image/*",
-              capture: "environment",
-              class: "sr-only",
-              "x-ref": "cameraInput",
-              "@change": "onCameraInput($event)"
-            )
-            input(
-              type: "file",
-              name: "file",
-              accept: "image/*",
-              class: "sr-only",
-              "x-ref": "fileInput",
-              "@change": "onFileInput($event)"
-            )
-
             div("x-show": "state === 'capture'", class: "card-body") do
               h2(class: "card-title") { plain "Add an image" }
               p(class: "card-lead") { plain "Take a photo or pick an image to keep." }
@@ -104,6 +86,23 @@ module Domus
               enctype: "multipart/form-data",
               "@submit": "onSubmit()"
             ) do
+              input(
+                type: "file",
+                name: "file",
+                accept: "image/*",
+                capture: "environment",
+                class: "sr-only",
+                "x-ref": "cameraInput",
+                "@change": "onCameraInput($event)"
+              )
+              input(
+                type: "file",
+                name: "file",
+                accept: "image/*",
+                class: "sr-only",
+                "x-ref": "fileInput",
+                "@change": "onFileInput($event)"
+              )
               div(class: "preview-zone") do
                 img(
                   "x-show": "preview",
