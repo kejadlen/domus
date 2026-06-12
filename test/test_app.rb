@@ -14,6 +14,8 @@ class TestApp < Minitest::Test
   def domus = Domus::Web.opts.fetch(:app)
 
   def setup
+    domus.db[:asset_attachments].delete
+    domus.db[:assets].delete
     domus.db[:files].delete
   end
 
@@ -61,6 +63,46 @@ class TestApp < Minitest::Test
 
     assert_equal 422, last_response.status
     assert_equal 0, domus.db[:files].count
+  end
+
+  def test_root_shows_assets
+    domus.db[:assets].insert(name: "Camera", created_at: Time.now)
+
+    get "/"
+
+    assert_equal 200, last_response.status
+    assert_includes last_response.body, "Camera"
+  end
+
+  def test_upload_with_asset_ids_creates_attachments
+    asset_id = domus.db[:assets].insert(name: "Laptop", created_at: Time.now)
+
+    post "/files", "file" => upload("photo.png", "image/png", "bytes"), "asset_ids[]" => asset_id.to_s
+
+    assert_equal 302, last_response.status
+    file = domus.db[:files].first
+    attachment = domus.db[:asset_attachments].first
+    refute_nil attachment
+    assert_equal asset_id, attachment[:asset_id]
+    assert_equal file[:id], attachment[:file_id]
+  end
+
+  def test_upload_with_multiple_asset_ids_creates_all_attachments
+    id1 = domus.db[:assets].insert(name: "Camera", created_at: Time.now)
+    id2 = domus.db[:assets].insert(name: "Laptop", created_at: Time.now)
+
+    post "/files", "file" => upload("photo.png", "image/png", "bytes"),
+      "asset_ids[]" => [id1.to_s, id2.to_s]
+
+    assert_equal 302, last_response.status
+    assert_equal 2, domus.db[:asset_attachments].count
+  end
+
+  def test_upload_without_asset_ids_creates_no_attachments
+    post "/files", "file" => upload("photo.png", "image/png", "bytes")
+
+    assert_equal 302, last_response.status
+    assert_equal 0, domus.db[:asset_attachments].count
   end
 
   private

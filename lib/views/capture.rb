@@ -7,6 +7,10 @@ module Domus
     class Capture < Phlex::HTML
       ICONS_DIR = File.expand_path("../../public/icons", __dir__)
 
+      def initialize(assets: [])
+        @assets = assets
+      end
+
       def view_template
         doctype
         html(lang: "en") do
@@ -119,6 +123,18 @@ module Domus
               end
 
               div(class: "save-form") do
+                unless @assets.empty?
+                  div(class: "asset-list") do
+                    p(class: "asset-list-label") { plain "Add to assets (optional)" }
+                    @assets.each do |asset|
+                      label(class: "asset-item") do
+                        input(type: "checkbox", name: "asset_ids[]", value: asset[:id])
+                        plain asset[:name]
+                      end
+                    end
+                  end
+                end
+
                 div(class: "btn-row") do
                   button(type: "submit", class: "btn btn-primary") do
                     icon("check")

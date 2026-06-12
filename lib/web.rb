@@ -35,7 +35,8 @@ module Domus
 
       r.root do
         r.get do
-          Views::Capture.new.call
+          assets = db[:assets].order(:name).all
+          Views::Capture.new(assets:).call
         end
       end
 
@@ -65,11 +66,20 @@ module Domus
       raise ClientError, "That image format isn't supported." unless IMAGE_EXTENSIONS.include?(ext)
       raise ClientError, "That image is too large (25 MB max)." if upload[:tempfile].size > MAX_UPLOAD_BYTES
 
-      id = db[:files].insert(extension: ext, created_at: Time.now)
+      asset_ids = Array(params["asset_ids"]).flatten.map(&:to_i).reject(&:zero?)
 
-      dest = app.file_path(id: id, extension: ext)
-      FileUtils.mkdir_p(::File.dirname(dest))
-      FileUtils.cp(upload[:tempfile].path, dest)
+      db.transaction do
+        file_id = db[:files].insert(extension: ext, created_at: Time.now)
+
+        dest = app.file_path(id: file_id, extension: ext)
+        FileUtils.mkdir_p(::File.dirname(dest))
+        FileUtils.cp(upload[:tempfile].path, dest)
+
+        now = Time.now
+        asset_ids.each do |asset_id|
+          db[:asset_attachments].insert(asset_id: asset_id, file_id: file_id, created_at: now)
+        end
+      end
     end
   end
 end
