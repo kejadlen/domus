@@ -101,8 +101,7 @@ module Domus
               "x-show": "state === 'saved'",
               method: "post",
               action: "/files",
-              enctype: "multipart/form-data",
-              "@submit.prevent": "false"
+              enctype: "multipart/form-data"
             ) do
               div(class: "preview-zone") do
                 img(
@@ -123,7 +122,7 @@ module Domus
                 div(class: "btn-row") do
                   button(type: "submit", class: "btn btn-primary") do
                     icon("check")
-                    plain "Save document"
+                    plain "Save image"
                   end
                   button(
                     type: "button",
