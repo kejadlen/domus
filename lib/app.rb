@@ -11,5 +11,9 @@ module Domus
       @config = config
       @db = Sequel.sqlite(config.database_url)
     end
+
+    def file_path(record)
+      ::File.join(config.storage_path, "files", "#{record[:id]}#{record[:extension]}")
+    end
   end
 end

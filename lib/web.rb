@@ -36,7 +36,6 @@ module Domus
 
     def app = opts.fetch(:app)
     def db = app.db
-    def storage_path = app.config.storage_path
 
     def save_file(params)
       upload = params["file"]
@@ -51,9 +50,9 @@ module Domus
         created_at: now
       )
 
-      dest_dir = ::File.join(storage_path, "files")
-      FileUtils.mkdir_p(dest_dir)
-      FileUtils.cp(upload[:tempfile].path, ::File.join(dest_dir, "#{id}#{ext}"))
+      dest = app.file_path(id: id, extension: ext)
+      FileUtils.mkdir_p(::File.dirname(dest))
+      FileUtils.cp(upload[:tempfile].path, dest)
     end
   end
 end
