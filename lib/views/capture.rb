@@ -37,8 +37,7 @@ module Domus
         header(class: "topbar") do
           a(href: "/", class: "logo") do
             span(class: "logo-mark")
-            plain "domus"
-            span(class: "logo-dot") { plain "." }
+            plain "domus."
           end
         end
       end
@@ -101,7 +100,7 @@ module Domus
             form(
               "x-show": "state === 'saved'",
               method: "post",
-              action: "/documents",
+              action: "/files",
               enctype: "multipart/form-data",
               "@submit.prevent": "false"
             ) do

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
 module Domus
-  class Document < Sequel::Model
+  class FileRecord < Sequel::Model(:files)
   end
 end
