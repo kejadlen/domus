@@ -55,7 +55,7 @@ module Domus
             input(
               type: "file",
               name: "file",
-              accept: "image/*,application/pdf",
+              accept: "image/*",
               capture: "environment",
               class: "sr-only",
               "x-ref": "cameraInput",
@@ -64,15 +64,15 @@ module Domus
             input(
               type: "file",
               name: "file",
-              accept: "image/*,application/pdf",
+              accept: "image/*",
               class: "sr-only",
               "x-ref": "fileInput",
               "@change": "onFileInput($event)"
             )
 
             div("x-show": "state === 'capture'", class: "card-body") do
-              h2(class: "card-title") { plain "Add a document" }
-              p(class: "card-lead") { plain "Take a photo or pick a file to keep." }
+              h2(class: "card-title") { plain "Add an image" }
+              p(class: "card-lead") { plain "Take a photo or pick an image to keep." }
 
               div(class: "btn-stack") do
                 button(
