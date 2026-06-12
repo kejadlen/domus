@@ -13,7 +13,7 @@ module Domus
           head do
             meta(charset: "utf-8")
             meta(name: "viewport", content: "width=device-width, initial-scale=1")
-            title { "Domus - Add document" }
+            title { "Domus - Add image" }
             link(rel: "stylesheet", href: "/app.css")
             script(defer: true, src: "/capture.js")
             script(defer: true, src: "https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js")
@@ -107,7 +107,7 @@ module Domus
                 img(
                   "x-show": "preview",
                   ":src": "preview",
-                  alt: "Captured document"
+                  alt: "Captured image"
                 )
                 div(
                   class: "preview-placeholder",
