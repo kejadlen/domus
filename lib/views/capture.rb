@@ -120,13 +120,14 @@ module Domus
 
               div(class: "save-form") do
                 div(class: "asset-inputs") do
-                  p(class: "asset-inputs-label") { plain "Create assets (optional)" }
+                  p(class: "asset-inputs-label") { plain "Assets" }
                   template("x-for": "(_, i) in assetNames", ":key": "i") do
                     div(class: "asset-input-row") do
                       input(
                         type: "text",
                         name: "asset_names[]",
                         placeholder: "Asset name",
+                        "@keydown.enter.prevent": "addAsset()",
                         "@input": "assetNames[i] = $event.target.value"
                       )
                       button(
@@ -139,8 +140,8 @@ module Domus
                   button(
                     type: "button",
                     class: "asset-add-btn",
-                    "@click": "assetNames.push('')"
-                  ) { plain "+ Add asset" }
+                    "@click": "addAsset()"
+                  ) { plain "Add another" }
                 end
 
                 div(class: "btn-row") do

@@ -25,6 +25,14 @@ function captureApp() {
       }
     },
 
+    addAsset() {
+      this.assetNames.push('');
+      this.$nextTick(() => {
+        const inputs = document.querySelectorAll('input[name="asset_names[]"]');
+        inputs[inputs.length - 1]?.focus();
+      });
+    },
+
     onSubmit() {
       const inactive = this.activeRef === 'cameraInput' ? this.$refs.fileInput : this.$refs.cameraInput;
       inactive.disabled = true;
