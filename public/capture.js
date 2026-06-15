@@ -4,7 +4,7 @@ function captureApp() {
     preview: null,
     dragging: false,
     activeRef: null,
-    assetNames: [],
+    assetNames: [''],
 
     handleFile(file, ref) {
       if (!file) return;
