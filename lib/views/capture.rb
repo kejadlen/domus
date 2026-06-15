@@ -135,7 +135,7 @@ module Domus
                         class: "btn-remove-asset",
                         "x-show": "assetNames[i] || assetNames.length > 1",
                         "@click": "removeAsset(i)"
-                      ) { plain "×" }
+                      ) { icon("trash") }
                     end
                   end
                   button(
