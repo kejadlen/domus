@@ -33,6 +33,11 @@ function captureApp() {
       });
     },
 
+    removeAsset(i) {
+      this.assetNames.splice(i, 1);
+      if (this.assetNames.length === 0) this.assetNames.push('');
+    },
+
     onSubmit() {
       const inactive = this.activeRef === 'cameraInput' ? this.$refs.fileInput : this.$refs.cameraInput;
       inactive.disabled = true;

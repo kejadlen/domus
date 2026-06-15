@@ -133,7 +133,8 @@ module Domus
                       button(
                         type: "button",
                         class: "btn-remove-asset",
-                        "@click": "assetNames.splice(i, 1)"
+                        "x-show": "assetNames[i] || assetNames.length > 1",
+                        "@click": "removeAsset(i)"
                       ) { plain "×" }
                     end
                   end
