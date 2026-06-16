@@ -272,11 +272,9 @@ html, body {
 
 .btn-remove-asset {
   flex: none;
-  width: 28px;
-  height: 28px;
-  padding: 0;
+  padding: var(--space-3xs);
   border: none;
-  border-radius: calc(var(--radius) - 4px);
+  border-radius: calc(var(--radius) - 2px);
   background: transparent;
   color: var(--ink-3);
   cursor: pointer;
