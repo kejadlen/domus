@@ -19,10 +19,35 @@ class TestApp < Minitest::Test
     domus.db[:files].delete
   end
 
-  def test_root
+  def test_root_renders_home
     get "/"
     assert_equal 200, last_response.status
     assert_includes last_response.body, "Domus"
+    assert_includes last_response.body, "Recent assets"
+  end
+
+  def test_root_lists_recent_assets_newest_first
+    now = Time.now
+    domus.db[:assets].insert(name: "Older asset", created_at: now - 86_400)
+    domus.db[:assets].insert(name: "Newer asset", created_at: now)
+
+    get "/"
+    assert_equal 200, last_response.status
+    body = last_response.body
+    assert_includes body, "Older asset"
+    assert_includes body, "Newer asset"
+    assert_operator body.index("Newer asset"), :<, body.index("Older asset")
+  end
+
+  def test_root_empty_state
+    get "/"
+    assert_equal 200, last_response.status
+    assert_includes last_response.body, "Nothing tracked yet."
+  end
+
+  def test_capture_page
+    get "/capture"
+    assert_equal 200, last_response.status
     assert_includes last_response.body, "Add an image"
   end
 

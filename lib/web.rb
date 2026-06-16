@@ -4,6 +4,7 @@ require "roda"
 require "fileutils"
 require_relative "views/layout"
 require_relative "views/capture"
+require_relative "views/home"
 
 module Domus
   # Raised when a request can't be processed because of client input. The
@@ -34,6 +35,13 @@ module Domus
       r.public
 
       r.root do
+        r.get do
+          assets = db[:assets].order(Sequel.desc(:created_at), Sequel.desc(:id)).limit(12).all
+          Views::Home.new(assets:, total: db[:assets].count).call
+        end
+      end
+
+      r.on "capture" do
         r.get do
           Views::Capture.new.call
         end
