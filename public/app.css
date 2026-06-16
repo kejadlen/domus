@@ -1,48 +1,71 @@
-/* Utopia fluid type scale - min 320px/1rem, max 1280px/1.25rem, ratio 1.25 */
+/* ════════════════════════════════════════════════════════════════════════
+   Domus — Calm Archive
+   Tokens mirror docs/design/domus-tokens.css. Fluid type & space generated
+   with the Utopia scale (utopia.fyi): viewport 320→1240px, body 18→20px,
+   type ratio 1.20→1.25. See docs/design/design-system.md.
+   ════════════════════════════════════════════════════════════════════════ */
 :root {
-  --step--2: clamp(0.64rem, calc(0.62rem + 0.11vw), 0.72rem);
-  --step--1: clamp(0.80rem, calc(0.76rem + 0.20vw), 0.94rem);
-  --step-0:  clamp(1.00rem, calc(0.93rem + 0.33vw), 1.25rem);
-  --step-1:  clamp(1.25rem, calc(1.14rem + 0.54vw), 1.56rem);
-  --step-2:  clamp(1.56rem, calc(1.40rem + 0.82vw), 1.95rem);
-  --step-3:  clamp(1.95rem, calc(1.72rem + 1.18vw), 2.44rem);
+  /* ── fluid type scale ───────────────────────────────────────────────── */
+  --step--2: clamp(0.7813rem, 0.7747rem + 0.0326vw, 0.8rem);     /* 12.50 → 12.80 */
+  --step--1: clamp(0.9375rem, 0.9158rem + 0.1087vw, 1rem);       /* 15.00 → 16.00 */
+  --step-0:  clamp(1.125rem,  1.0815rem + 0.2174vw, 1.25rem);    /* 18.00 → 20.00 */
+  --step-1:  clamp(1.35rem,   1.2761rem + 0.3696vw, 1.5625rem);  /* 21.60 → 25.00 */
+  --step-2:  clamp(1.62rem,   1.5041rem + 0.5793vw, 1.9531rem);  /* 25.92 → 31.25 */
+  --step-3:  clamp(1.944rem,  1.771rem  + 0.8651vw, 2.4414rem);  /* 31.10 → 39.06 */
+  --step-4:  clamp(2.3328rem, 2.0827rem + 1.2504vw, 3.0518rem);  /* 37.32 → 48.83 */
+  --step-5:  clamp(2.7994rem, 2.4462rem + 1.7658vw, 3.8147rem);  /* 44.79 → 61.04 */
 
-  /* Utopia fluid space scale */
-  --space-3xs: clamp(0.25rem, calc(0.23rem + 0.11vw), 0.31rem);
-  --space-2xs: clamp(0.50rem, calc(0.46rem + 0.22vw), 0.63rem);
-  --space-xs:  clamp(0.75rem, calc(0.70rem + 0.27vw), 0.94rem);
-  --space-s:   clamp(1.00rem, calc(0.93rem + 0.33vw), 1.25rem);
-  --space-m:   clamp(1.50rem, calc(1.40rem + 0.54vw), 1.88rem);
-  --space-l:   clamp(2.00rem, calc(1.85rem + 0.76vw), 2.50rem);
-  --space-xl:  clamp(3.00rem, calc(2.78rem + 1.09vw), 3.75rem);
-  --space-2xl: clamp(4.00rem, calc(3.70rem + 1.52vw), 5.00rem);
-  --space-3xl: clamp(6.00rem, calc(5.56rem + 2.17vw), 7.50rem);
+  /* ── fluid space scale ──────────────────────────────────────────────── */
+  --space-3xs: clamp(0.2813rem, 0.2704rem + 0.0543vw, 0.3125rem);   /*  4.5 →  5  */
+  --space-2xs: clamp(0.5625rem, 0.5408rem + 0.1087vw, 0.625rem);    /*  9   → 10  */
+  --space-xs:  clamp(0.8438rem, 0.8111rem + 0.163vw,  0.9375rem);   /* 13.5 → 15  */
+  --space-s:   clamp(1.125rem,  1.0815rem + 0.2174vw, 1.25rem);     /* 18   → 20  */
+  --space-m:   clamp(1.6875rem, 1.6223rem + 0.3261vw, 1.875rem);    /* 27   → 30  */
+  --space-l:   clamp(2.25rem,   2.163rem  + 0.4348vw, 2.5rem);      /* 36   → 40  */
+  --space-xl:  clamp(3.375rem,  3.2446rem + 0.6522vw, 3.75rem);     /* 54   → 60  */
+  --space-2xl: clamp(4.5rem,    4.3261rem + 0.8696vw, 5rem);        /* 72   → 80  */
+  --space-3xl: clamp(6.75rem,   6.4891rem + 1.3043vw, 7.5rem);      /* 108  → 120 */
 
-  /* Design tokens */
-  --bg:         oklch(0.985 0.002 255);
-  --surface:    #ffffff;
-  --ink:        oklch(0.24 0.012 262);
-  --ink-2:      oklch(0.50 0.010 262);
-  --ink-3:      oklch(0.68 0.008 262);
-  --line:       oklch(0.905 0.004 262);
-  --line-2:     oklch(0.82 0.006 262);
-  --fill:       oklch(0.967 0.003 262);
-  --fill-2:     oklch(0.945 0.004 262);
-  --accent:     oklch(0.50 0.17 290);
-  --accent-ink: oklch(0.42 0.17 290);
-  --accent-soft:oklch(0.96 0.03 290);
-  --radius:     10px;
-  --font-ui:    system-ui, -apple-system, sans-serif;
-  --font-mono:  ui-monospace, "SF Mono", monospace;
+  /* ── paper & ink (warm, low chroma) ─────────────────────────────────── */
+  --w-desk:    #e9e3d6;   /* page background / desk */
+  --w-bg:      #f3efe6;   /* warm paper */
+  --w-surface: #fdfbf6;   /* card stock */
+  --w-fill:    #efe9dc;   /* recessed paper */
+  --w-fill-2:  #e9e2d2;
+  --w-line:    #e4ddcf;   /* hairline */
+  --w-line-2:  #d4cbb8;   /* rule */
+  --w-ink-3:   #9b9384;   /* faint catalog-label */
+  --w-ink-2:   #6b6458;   /* muted */
+  --w-ink:     #2a261f;   /* warm near-black */
+
+  /* ── accent (Clay — swappable at the brand level) ───────────────────── */
+  --w-accent:      #9a5a3c;
+  --w-accent-ink:  color-mix(in oklch, var(--w-accent) 80%, black);
+  --w-accent-soft: color-mix(in oklch, var(--w-accent) 12%, white);
+
+  /* ── radius & elevation ─────────────────────────────────────────────── */
+  --radius: 14px;                     /* cards; controls subtract 5–6px */
+  --shadow-float:
+    0 1px 2px rgba(60,52,36,.04),
+    0 4px 10px -4px rgba(60,52,36,.10),
+    0 24px 48px -28px rgba(60,52,36,.30);
+
+  /* ── families (web-safe, no custom fonts) ───────────────────────────── */
+  --font-serif: Georgia, "Times New Roman", "Iowan Old Style", serif;
+  --font-ui:    "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
+  --font-mono:  ui-monospace, Menlo, Consolas, "Courier New", monospace;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
 
-html, body {
+html { font-size: 100%; }
+body {
   margin: 0; padding: 0;
-  background: var(--bg);
+  background: var(--w-bg);
   font-family: var(--font-ui);
-  color: var(--ink);
+  font-size: var(--step-0);
+  line-height: 1.55;
+  color: var(--w-ink);
   -webkit-font-smoothing: antialiased;
 }
 
@@ -65,28 +88,28 @@ html, body {
   align-items: center;
   padding: 0 var(--space-m);
   height: 58px;
-  border-bottom: 1px solid var(--line);
-  background: color-mix(in oklch, var(--surface) 70%, var(--bg));
-  backdrop-filter: blur(4px);
+  border-bottom: 1px solid var(--w-line);
+  background: var(--w-bg);
   position: sticky;
   top: 0;
   z-index: 10;
 }
 
 .logo {
+  font-family: var(--font-serif);
   font-size: var(--step-1);
-  font-weight: 700;
-  letter-spacing: -0.03em;
+  font-weight: 600;
+  letter-spacing: -0.012em;
   display: flex;
   align-items: center;
   gap: var(--space-2xs);
-  color: var(--ink);
+  color: var(--w-ink);
   text-decoration: none;
 }
 
 .logo-mark {
   width: 22px; height: 22px;
-  border: 1.5px solid var(--ink);
+  border: 1.5px solid var(--w-ink);
   border-radius: 6px;
   position: relative;
   flex: none;
@@ -96,8 +119,8 @@ html, body {
   position: absolute;
   inset: 4px 4px auto 4px;
   height: 1.5px;
-  background: var(--ink);
-  box-shadow: 0 4px 0 var(--ink), 0 8px 0 var(--accent);
+  background: var(--w-ink);
+  box-shadow: 0 4px 0 var(--w-ink), 0 8px 0 var(--w-accent);
 }
 
 /* ---- main content ---- */
@@ -111,29 +134,30 @@ html, body {
 
 /* ---- capture card ---- */
 .card {
-  background: var(--surface);
-  border: 1px solid var(--line);
+  background: var(--w-surface);
+  border: 1px solid var(--w-line);
   border-radius: var(--radius);
-  box-shadow: 0 18px 50px -20px rgba(20,22,30,0.28), 0 2px 8px -4px rgba(20,22,30,0.12);
+  box-shadow: var(--shadow-float);
   width: min(420px, 100%);
   overflow: hidden;
 }
 
 .card-body {
-  padding: var(--space-l);
+  padding: var(--space-m);
 }
 
 .card-title {
+  font-family: var(--font-serif);
   font-size: var(--step-1);
-  font-weight: 650;
-  letter-spacing: -0.02em;
+  font-weight: 600;
+  letter-spacing: -0.012em;
   line-height: 1.12;
   margin: 0 0 var(--space-3xs) 0;
 }
 
 .card-lead {
   font-size: var(--step--1);
-  color: var(--ink-2);
+  color: var(--w-ink-2);
   margin: 0 0 var(--space-m) 0;
   line-height: 1.45;
 }
@@ -150,42 +174,45 @@ html, body {
   align-items: center;
   justify-content: center;
   gap: var(--space-2xs);
-  padding: var(--space-xs) var(--space-m);
-  border: 1px solid var(--line-2);
-  border-radius: calc(var(--radius) - 2px);
-  background: var(--surface);
+  padding: var(--space-xs) var(--space-s);
+  border: 1px solid var(--w-line-2);
+  border-radius: calc(var(--radius) - 5px);
+  background: var(--w-surface);
   font-family: var(--font-ui);
-  font-size: var(--step-0);
+  font-size: var(--step--1);
   font-weight: 550;
   letter-spacing: -0.01em;
-  color: var(--ink);
+  color: var(--w-ink);
   cursor: pointer;
   white-space: nowrap;
   width: 100%;
-  transition: background .12s ease, border-color .12s ease;
+  transition: background .14s ease, border-color .14s ease;
   text-align: center;
 }
 
-.btn:hover { background: var(--fill); }
+.btn:hover { background: var(--w-fill); }
 
 .btn-primary {
-  background: var(--accent);
-  border-color: var(--accent);
+  background: var(--w-accent);
+  border-color: var(--w-accent);
   color: #fff;
 }
-.btn-primary:hover { background: var(--accent-ink); }
+.btn-primary:hover {
+  background: var(--w-accent-ink);
+  border-color: var(--w-accent-ink);
+}
 
 .btn-ghost {
   background: transparent;
   border-color: transparent;
-  color: var(--ink-2);
+  color: var(--w-ink-2);
 }
-.btn-ghost:hover { background: var(--fill); }
+.btn-ghost:hover { background: var(--w-fill); }
 
 .drop-hint {
   font-family: var(--font-mono);
   font-size: var(--step--2);
-  color: var(--ink-3);
+  color: var(--w-ink-3);
   text-align: center;
   margin-top: var(--space-s);
 }
@@ -193,8 +220,11 @@ html, body {
 /* ---- saved state ---- */
 .preview-zone {
   height: 210px;
-  border-bottom: 1px solid var(--line);
-  background: var(--fill-2);
+  border-bottom: 1px solid var(--w-line);
+  background:
+    repeating-linear-gradient(45deg, transparent 0 8px,
+      rgba(60,52,36,.045) 8px 9px),
+    var(--w-fill);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -212,9 +242,11 @@ html, body {
   flex-direction: column;
   align-items: center;
   gap: var(--space-2xs);
-  color: var(--ink-3);
+  color: var(--w-ink-3);
   font-family: var(--font-mono);
   font-size: var(--step--2);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 .save-form {
@@ -241,9 +273,12 @@ html, body {
 
 .asset-inputs-label {
   margin: 0;
-  font-size: var(--step--1);
-  color: var(--ink-3);
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
   font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--w-ink-2);
 }
 
 .asset-input-row {
@@ -255,38 +290,38 @@ html, body {
 .asset-input-row input[type="text"] {
   flex: 1;
   min-width: 0;
-  padding: var(--space-2xs) var(--space-xs);
-  border: 1px solid var(--line-2);
-  border-radius: calc(var(--radius) - 2px);
+  padding: var(--space-xs) var(--space-s);
+  border: 1px solid var(--w-line-2);
+  border-radius: calc(var(--radius) - 6px);
   font-family: var(--font-ui);
-  font-size: var(--step-0);
-  color: var(--ink);
-  background: var(--surface);
+  font-size: var(--step--1);
+  color: var(--w-ink);
+  background: var(--w-surface);
   outline: none;
 }
 
 .asset-input-row input[type="text"]:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 2px var(--accent-soft);
+  border-color: var(--w-accent);
+  box-shadow: 0 0 0 2px var(--w-accent-soft);
 }
 
 .btn-remove-asset {
   flex: none;
   padding: var(--space-3xs);
   border: none;
-  border-radius: calc(var(--radius) - 2px);
+  border-radius: calc(var(--radius) - 6px);
   background: transparent;
-  color: var(--ink-3);
+  color: var(--w-ink-3);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background .12s ease, color .12s ease;
+  transition: background .14s ease, color .14s ease;
 }
 
 .btn-remove-asset:hover {
-  background: var(--fill-2);
-  color: var(--ink);
+  background: var(--w-fill-2);
+  color: var(--w-ink);
 }
 
 .asset-add-btn {
@@ -297,7 +332,7 @@ html, body {
   font-family: var(--font-ui);
   font-size: var(--step--1);
   font-weight: 550;
-  color: var(--accent-ink);
+  color: var(--w-accent-ink);
   cursor: pointer;
 }
 
@@ -308,8 +343,8 @@ html, body {
 
 /* ---- dropzone drag feedback ---- */
 .card[data-drag="over"] {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-soft), 0 18px 50px -20px rgba(20,22,30,0.28);
+  border-color: var(--w-accent);
+  box-shadow: 0 0 0 3px var(--w-accent-soft), var(--shadow-float);
 }
 
 @media (max-width: 480px) {

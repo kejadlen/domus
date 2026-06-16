@@ -65,23 +65,16 @@ multiples above.
 
 ## Generating tokens
 
-Prefer the helper script (no network, deterministic):
+Use the math above to compute a step by hand, or feed the project config
+into the interactive generators:
 
-```bash
-# Print the full :root token block (type + space) for the project config:
-python3 .claude/skills/utopia/scripts/utopia.py
+- Type — <https://utopia.fyi/type/calculator>
+- Space — <https://utopia.fyi/space/calculator>
 
-# Compute a single clamp() for an arbitrary min→max px pair:
-python3 .claude/skills/utopia/scripts/utopia.py 13.5 15
-# → clamp(0.8438rem, 0.8111rem + 0.163vw, 0.9375rem)
-
-# Override the viewport range or rem base:
-python3 .claude/skills/utopia/scripts/utopia.py --min-vw 320 --max-vw 1240 25.92 31.25
-```
-
-The interactive generator at <https://utopia.fyi/type/calculator> and
-<https://utopia.fyi/space/calculator> produces the same values if you'd
-rather use the UI — feed it the config above.
+Set viewport 320 → 1240, body 18 → 20, ratio 1.20 → 1.25, then copy the
+emitted `--step-*` / `--space-*` clamps. Verify a new value against an
+existing one in `docs/design/domus-tokens.css` (e.g. step 0 must stay
+`clamp(1.125rem, 1.0815rem + 0.2174vw, 1.25rem)`) so the scale matches.
 
 ## Using the tokens
 
