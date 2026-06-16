@@ -4,6 +4,7 @@ function captureApp() {
     preview: null,
     dragging: false,
     activeRef: null,
+    assetNames: [''],
 
     handleFile(file, ref) {
       if (!file) return;
@@ -24,6 +25,22 @@ function captureApp() {
       }
     },
 
+    addAsset() {
+      this.assetNames.push('');
+      this.$nextTick(() => {
+        const inputs = document.querySelectorAll('input[name="asset_names[]"]');
+        inputs[inputs.length - 1]?.focus();
+      });
+    },
+
+    removeAsset(i) {
+      if (this.assetNames.length === 1) {
+        this.assetNames[0] = '';
+      } else {
+        this.assetNames.splice(i, 1);
+      }
+    },
+
     onSubmit() {
       const inactive = this.activeRef === 'cameraInput' ? this.$refs.fileInput : this.$refs.cameraInput;
       inactive.disabled = true;
@@ -34,6 +51,7 @@ function captureApp() {
       this.state = 'capture';
       this.preview = null;
       this.activeRef = null;
+      this.assetNames = [];
       this.$refs.fileInput.disabled = false;
       this.$refs.cameraInput.disabled = false;
       this.$refs.fileInput.value = '';
