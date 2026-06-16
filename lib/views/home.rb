@@ -1,14 +1,17 @@
 # frozen_string_literal: true
 
 require "phlex"
+require_relative "icons"
+require_relative "capture_form"
 
 module Domus
   module Views
     # The home page — the archive's front door. Capture actions live in the
-    # header (and a thumb-reachable dock on small screens); the recent assets
-    # run as a single-column list below. Calm Archive language throughout.
+    # header (and a thumb-reachable dock on small screens) and open the
+    # picker in place: the whole page is one captureApp() Alpine component,
+    # so choosing a file swaps the recent-asset list for the save form.
     class Home < Phlex::HTML
-      ICONS_DIR = File.expand_path("../../public/icons", __dir__)
+      include Icons
 
       def initialize(assets:, total:)
         @assets = assets
@@ -23,11 +26,14 @@ module Domus
             meta(name: "viewport", content: "width=device-width, initial-scale=1")
             title { "Domus" }
             link(rel: "stylesheet", href: "/app.css")
+            script(defer: true, src: "/capture.js")
+            script(defer: true, src: "https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js")
           end
           body do
-            div(class: "page") do
+            div(class: "page", "x-data": "captureApp()") do
               render_header
               render_main
+              render_capture
               render_footer
               render_dock
             end
@@ -43,16 +49,25 @@ module Domus
             span(class: "logo-mark")
             plain "domus"
           end
-          render_actions(class: "actions")
+          render_actions(class: "actions", "x-show": "state === 'capture'")
         end
       end
 
-      # The capture entry points. Both lead to the capture flow, where the
-      # camera and file pickers live.
+      # The capture entry points. Rather than navigating, they trigger the
+      # hidden inputs that captureApp() drives, opening the camera or file
+      # picker in place.
       def render_actions(**attrs)
         div(**attrs) do
-          a(href: "/capture", class: "browse") { plain "Upload a file" }
-          a(href: "/capture", class: "add-btn") do
+          button(
+            type: "button",
+            class: "browse",
+            "@click": "$refs.fileInput.click()"
+          ) { plain "Upload a file" }
+          button(
+            type: "button",
+            class: "add-btn",
+            "@click": "$refs.cameraInput.click()"
+          ) do
             icon("camera")
             plain "Take a photo"
           end
@@ -60,7 +75,7 @@ module Domus
       end
 
       def render_main
-        main(class: "wrap") do
+        main(class: "wrap", "x-show": "state === 'capture'") do
           section do
             div(class: "sec-h") do
               h3 { plain "Recent assets" }
@@ -95,8 +110,17 @@ module Domus
         end
       end
 
+      # The capture save step, shown once a photo or file has been chosen.
+      def render_capture
+        div(class: "content", "x-show": "state === 'saved'", "x-cloak": true) do
+          div(class: "card") do
+            render CaptureForm.new
+          end
+        end
+      end
+
       def render_footer
-        footer(class: "foot") do
+        footer(class: "foot", "x-show": "state === 'capture'") do
           span(class: "fm") { plain "v1.0" }
         end
       end
@@ -104,7 +128,7 @@ module Domus
       # On small screens the capture actions move to a thumb-reachable dock
       # fixed to the bottom of the viewport; it's hidden on wider screens.
       def render_dock
-        render_actions(class: "dock")
+        render_actions(class: "dock", "x-show": "state === 'capture'")
       end
 
       # Compact, archival relative time — "now", "5m", "3h", "2d", "1w", "4mo".
@@ -130,14 +154,6 @@ module Domus
         return "#{months}mo" if months < 12
 
         "#{days / 365}y"
-      end
-
-      ICONS = Hash.new do |cache, name|
-        cache[name] = File.read(File.join(ICONS_DIR, "#{name}.svg")).freeze
-      end
-
-      def icon(name)
-        raw safe(ICONS[name])
       end
     end
   end

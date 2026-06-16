@@ -75,6 +75,9 @@ body {
   clip: rect(0,0,0,0); white-space: nowrap; border: 0;
 }
 
+/* Hide Alpine-managed nodes until the component initializes. */
+[x-cloak] { display: none !important; }
+
 /* ---- page shell ---- */
 .page {
   min-height: 100dvh;

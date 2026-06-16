@@ -45,6 +45,17 @@ class TestApp < Minitest::Test
     assert_includes last_response.body, "Nothing tracked yet."
   end
 
+  def test_root_capture_actions_open_picker_in_place
+    get "/"
+    body = last_response.body
+    # The capture flow is embedded, so the actions trigger the file inputs
+    # rather than navigating away.
+    assert_includes body, "captureApp()"
+    assert_includes body, "$refs.cameraInput.click()"
+    assert_includes body, "$refs.fileInput.click()"
+    refute_includes body, 'href="/capture"'
+  end
+
   def test_capture_page
     get "/capture"
     assert_equal 200, last_response.status

@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
 require_relative "layout"
+require_relative "icons"
+require_relative "capture_form"
 
 module Domus
   module Views
     class Capture < Phlex::HTML
-      ICONS_DIR = File.expand_path("../../public/icons", __dir__)
+      include Icons
 
       def view_template
         doctype
@@ -79,94 +81,9 @@ module Domus
               p(class: "drop-hint") { plain "or drop a file onto this card" }
             end
 
-            form(
-              "x-show": "state === 'saved'",
-              method: "post",
-              action: "/files",
-              enctype: "multipart/form-data",
-              "@submit": "onSubmit()"
-            ) do
-              input(
-                type: "file",
-                name: "file",
-                accept: "image/*",
-                capture: "environment",
-                class: "sr-only",
-                "x-ref": "cameraInput",
-                "@change": "onCameraInput($event)"
-              )
-              input(
-                type: "file",
-                name: "file",
-                accept: "image/*",
-                class: "sr-only",
-                "x-ref": "fileInput",
-                "@change": "onFileInput($event)"
-              )
-              div(class: "preview-zone") do
-                img(
-                  "x-show": "preview",
-                  ":src": "preview",
-                  alt: "Captured image"
-                )
-                div(
-                  class: "preview-placeholder",
-                  "x-show": "!preview"
-                ) do
-                  icon("image")
-                  plain "captured file"
-                end
-              end
-
-              div(class: "save-form") do
-                div(class: "asset-inputs") do
-                  p(class: "asset-inputs-label") { plain "Assets" }
-                  template("x-for": "(_, i) in assetNames", ":key": "i") do
-                    div(class: "asset-input-row") do
-                      input(
-                        type: "text",
-                        name: "asset_names[]",
-                        placeholder: "Asset name",
-                        "x-model": "assetNames[i]",
-                        "@keydown.enter.prevent": "addAsset()"
-                      )
-                      button(
-                        type: "button",
-                        class: "btn-remove-asset",
-                        "@click": "removeAsset(i)"
-                      ) { icon("trash") }
-                    end
-                  end
-                  button(
-                    type: "button",
-                    class: "asset-add-btn",
-                    "@click": "addAsset()"
-                  ) { plain "Add another" }
-                end
-
-                div(class: "btn-row") do
-                  button(type: "submit", class: "btn btn-primary") do
-                    icon("check")
-                    plain "Save image"
-                  end
-                  button(
-                    type: "button",
-                    class: "btn",
-                    "@click": "reset()"
-                  ) { plain "Discard" }
-                end
-              end
-            end
+            render CaptureForm.new
           end
         end
-      end
-
-      ICONS = Hash.new do |cache, name|
-        cache[name] = File.read(File.join(ICONS_DIR, "#{name}.svg")).freeze
-      end
-
-      def icon(name)
-        raw safe(ICONS[name])
       end
     end
   end
