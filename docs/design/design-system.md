@@ -221,8 +221,8 @@ Three web-safe families, each with a clear job. No custom font loading.
 ### Buttons
 
 Flat and quiet — they recede, they don't perform. Primary is a calm accent
-fill; default is paper with a rule; ghost is text-only; dark is reserved for a
-single committing action (e.g. *Save*).
+fill; default is paper with a rule; dark is reserved for a single committing
+action (e.g. *Save*).
 
 ```css
 .btn {
@@ -239,7 +239,6 @@ single committing action (e.g. *Save*).
 .btn.primary         { background: var(--w-accent); border-color: var(--w-accent); color: #fff; }
 .btn.primary:hover   { background: var(--w-accent-ink); border-color: var(--w-accent-ink); }
 .btn.dark            { background: var(--w-ink); border-color: var(--w-ink); color: var(--w-bg); }
-.btn.ghost           { background: transparent; border-color: transparent; color: var(--w-ink-2); }
 ```
 
 - **Sizes** — `sm` / default / `lg` adjust padding only; font stays on the

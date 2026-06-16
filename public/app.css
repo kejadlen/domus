@@ -202,13 +202,6 @@ body {
   border-color: var(--w-accent-ink);
 }
 
-.btn-ghost {
-  background: transparent;
-  border-color: transparent;
-  color: var(--w-ink-2);
-}
-.btn-ghost:hover { background: var(--w-fill); }
-
 .drop-hint {
   font-family: var(--font-mono);
   font-size: var(--step--2);
