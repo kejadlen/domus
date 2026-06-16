@@ -34,8 +34,11 @@ function captureApp() {
     },
 
     removeAsset(i) {
-      this.assetNames.splice(i, 1);
-      if (this.assetNames.length === 0) this.assetNames.push('');
+      if (this.assetNames.length === 1) {
+        this.assetNames[0] = '';
+      } else {
+        this.assetNames.splice(i, 1);
+      }
     },
 
     onSubmit() {

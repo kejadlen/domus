@@ -127,13 +127,12 @@ module Domus
                         type: "text",
                         name: "asset_names[]",
                         placeholder: "Asset name",
-                        "@keydown.enter.prevent": "addAsset()",
-                        "@input": "assetNames[i] = $event.target.value"
+                        "x-model": "assetNames[i]",
+                        "@keydown.enter.prevent": "addAsset()"
                       )
                       button(
                         type: "button",
                         class: "btn-remove-asset",
-                        "x-show": "assetNames[i] || assetNames.length > 1",
                         "@click": "removeAsset(i)"
                       ) { icon("trash") }
                     end
