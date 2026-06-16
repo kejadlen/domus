@@ -1,0 +1,73 @@
+/* ════════════════════════════════════════════════════════════════════════
+   Domus — design tokens (Calm Archive)
+   Fluid type & space generated with the Utopia scale (utopia.fyi).
+
+   Config
+   ──────
+   Viewport   320px  →  1240px
+   Body       18px   →  20px
+   Type ratio 1.20 (Minor Third)  →  1.25 (Major Third)
+   Space      base = body, multiples 0.25 / 0.5 / 0.75 / 1 / 1.5 / 2 / 3 / 4 / 6
+   ════════════════════════════════════════════════════════════════════════ */
+
+:root {
+
+  /* ── fluid type scale ───────────────────────────────────────────────── */
+  --step--2: clamp(0.7813rem, 0.7747rem + 0.0326vw, 0.8rem);     /* 12.50 → 12.80 */
+  --step--1: clamp(0.9375rem, 0.9158rem + 0.1087vw, 1rem);       /* 15.00 → 16.00 */
+  --step-0:  clamp(1.125rem,  1.0815rem + 0.2174vw, 1.25rem);    /* 18.00 → 20.00 */
+  --step-1:  clamp(1.35rem,   1.2761rem + 0.3696vw, 1.5625rem);  /* 21.60 → 25.00 */
+  --step-2:  clamp(1.62rem,   1.5041rem + 0.5793vw, 1.9531rem);  /* 25.92 → 31.25 */
+  --step-3:  clamp(1.944rem,  1.771rem  + 0.8651vw, 2.4414rem);  /* 31.10 → 39.06 */
+  --step-4:  clamp(2.3328rem, 2.0827rem + 1.2504vw, 3.0518rem);  /* 37.32 → 48.83 */
+  --step-5:  clamp(2.7994rem, 2.4462rem + 1.7658vw, 3.8147rem);  /* 44.79 → 61.04 */
+
+  /* ── fluid space scale ──────────────────────────────────────────────── */
+  --space-3xs: clamp(0.2813rem, 0.2704rem + 0.0543vw, 0.3125rem);   /*  4.5 →  5  */
+  --space-2xs: clamp(0.5625rem, 0.5408rem + 0.1087vw, 0.625rem);    /*  9   → 10  */
+  --space-xs:  clamp(0.8438rem, 0.8111rem + 0.163vw,  0.9375rem);   /* 13.5 → 15  */
+  --space-s:   clamp(1.125rem,  1.0815rem + 0.2174vw, 1.25rem);     /* 18   → 20  */
+  --space-m:   clamp(1.6875rem, 1.6223rem + 0.3261vw, 1.875rem);    /* 27   → 30  */
+  --space-l:   clamp(2.25rem,   2.163rem  + 0.4348vw, 2.5rem);      /* 36   → 40  */
+  --space-xl:  clamp(3.375rem,  3.2446rem + 0.6522vw, 3.75rem);     /* 54   → 60  */
+  --space-2xl: clamp(4.5rem,    4.3261rem + 0.8696vw, 5rem);        /* 72   → 80  */
+  --space-3xl: clamp(6.75rem,   6.4891rem + 1.3043vw, 7.5rem);      /* 108  → 120 */
+
+  /* one-up pairs (useful for asymmetric rhythm) */
+  --space-s-m:  clamp(1.125rem, 0.8641rem + 1.3043vw, 1.875rem);    /* 18 → 30 */
+  --space-m-l:  clamp(1.6875rem, 1.4049rem + 1.413vw, 2.5rem);      /* 27 → 40 */
+  --space-l-xl: clamp(2.25rem, 1.7283rem + 2.6087vw, 3.75rem);      /* 36 → 60 */
+
+  /* ── paper & ink (warm, low chroma) ─────────────────────────────────── */
+  --w-desk:    #e9e3d6;   /* page background / desk */
+  --w-bg:      #f3efe6;   /* warm paper */
+  --w-surface: #fdfbf6;   /* card stock */
+  --w-fill:    #efe9dc;   /* recessed paper */
+  --w-fill-2:  #e9e2d2;
+  --w-line:    #e4ddcf;   /* hairline */
+  --w-line-2:  #d4cbb8;   /* rule */
+  --w-ink-3:   #9b9384;   /* faint catalog-label */
+  --w-ink-2:   #6b6458;   /* muted */
+  --w-ink:     #2a261f;   /* warm near-black */
+
+  /* ── accent (Clay — swappable at the brand level) ───────────────────── */
+  --w-accent:      #9a5a3c;
+  --w-accent-ink:  color-mix(in oklch, var(--w-accent) 80%, black);
+  --w-accent-soft: color-mix(in oklch, var(--w-accent) 12%, white);
+
+  /* ── radius & elevation ─────────────────────────────────────────────── */
+  --radius: 14px;                     /* cards; controls subtract 5–6px */
+  --shadow-float:
+    0 1px 2px rgba(60,52,36,.04),
+    0 4px 10px -4px rgba(60,52,36,.10),
+    0 24px 48px -28px rgba(60,52,36,.30);
+
+  /* ── families (web-safe, no custom fonts) ───────────────────────────── */
+  --font-serif: Georgia, "Times New Roman", "Iowan Old Style", serif;
+  --font-ui:    "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
+  --font-mono:  ui-monospace, Menlo, Consolas, "Courier New", monospace;
+}
+
+/* Set the document's base font from step 0 so rem-based tokens scale with it. */
+html { font-size: 100%; }              /* respect user default (≈16px) */
+body { font-size: var(--step-0); font-family: var(--font-ui); line-height: 1.55; color: var(--w-ink); }

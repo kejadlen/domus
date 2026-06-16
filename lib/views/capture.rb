@@ -151,7 +151,7 @@ module Domus
                   end
                   button(
                     type: "button",
-                    class: "btn btn-ghost",
+                    class: "btn",
                     "@click": "reset()"
                   ) { plain "Discard" }
                 end
