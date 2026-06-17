@@ -48,11 +48,11 @@ class TestApp < Minitest::Test
   def test_root_capture_actions_open_picker_in_place
     get "/"
     body = last_response.body
-    # The capture flow is embedded, so the actions trigger the file inputs
-    # rather than navigating away.
+    # The capture flow is embedded, so the split button opens the picker in
+    # place (primary + alternate) rather than navigating away.
     assert_includes body, "captureApp()"
-    assert_includes body, "$refs.cameraInput.click()"
-    assert_includes body, "$refs.fileInput.click()"
+    assert_includes body, "capturePrimary()"
+    assert_includes body, "captureAlternate()"
     refute_includes body, 'href="/capture"'
   end
 

@@ -51,23 +51,48 @@ module Domus
         end
       end
 
-      # The capture entry points. Rather than navigating, they trigger the
-      # hidden inputs that captureApp() drives, opening the camera or file
-      # picker in place.
-      def render_actions(**attrs)
-        div(**attrs) do
-          button(
-            type: "button",
-            class: "browse",
-            "@click": "$refs.fileInput.click()"
-          ) { plain "Upload a file" }
-          button(
-            type: "button",
-            class: "add-btn",
-            "@click": "$refs.cameraInput.click()"
+      # A single split button: the primary action opens the picker
+      # captureApp() chooses for the viewport (upload on desktop, camera on
+      # mobile), and the caret opens a drop-up menu with the alternate.
+      # Both labels are rendered and toggled by media query.
+      def render_capture_control
+        div(class: "capture", "@click.outside": "menuOpen = false") do
+          div(class: "split") do
+            button(
+              type: "button",
+              class: "add-btn split-main",
+              "@click": "capturePrimary()"
+            ) do
+              span(class: "when-wide") { icon("folder"); plain "Upload a file" }
+              span(class: "when-narrow") { icon("camera"); plain "Take a photo" }
+            end
+            button(
+              type: "button",
+              class: "add-btn split-toggle",
+              "aria-label": "More capture options",
+              ":aria-expanded": "menuOpen",
+              ":class": "{ 'is-open': menuOpen }",
+              "@click": "menuOpen = !menuOpen"
+            ) { icon("chevron") }
+          end
+
+          div(
+            class: "menu",
+            role: "menu",
+            "x-show": "menuOpen",
+            "x-cloak": true,
+            "x-transition.opacity.duration.120ms": true,
+            "@keydown.escape.window": "menuOpen = false"
           ) do
-            icon("camera")
-            plain "Take a photo"
+            button(
+              type: "button",
+              class: "menu-item",
+              role: "menuitem",
+              "@click": "captureAlternate()"
+            ) do
+              span(class: "when-wide") { icon("camera"); plain "Take a photo" }
+              span(class: "when-narrow") { icon("folder"); plain "Upload a file" }
+            end
           end
         end
       end
@@ -121,7 +146,9 @@ module Domus
       # every screen, so the primary action stays reachable and out of the
       # header.
       def render_dock
-        render_actions(class: "dock", "x-show": "state === 'capture'")
+        div(class: "dock", "x-show": "state === 'capture'") do
+          render_capture_control
+        end
       end
 
       # Compact, archival relative time — "now", "5m", "3h", "2d", "1w", "4mo".
