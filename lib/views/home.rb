@@ -3,13 +3,14 @@
 require "phlex"
 require_relative "icons"
 require_relative "capture_form"
+require_relative "../relative_time"
 
 module Domus
   module Views
-    # The home page — the archive's front door. Capture actions live in the
-    # header (and a thumb-reachable dock on small screens) and open the
-    # picker in place: the whole page is one captureApp() Alpine component,
-    # so choosing a file swaps the recent-asset list for the save form.
+    # The home page — the archive's front door. Capture actions live in a
+    # thumb-reachable dock and open the picker in place: the whole page is one
+    # captureApp() Alpine component, so choosing a file swaps the recent-asset
+    # list for the save form.
     class Home < Phlex::HTML
       include Icons
 
@@ -31,10 +32,10 @@ module Domus
           end
           body do
             div(class: "page", "x-data": "captureApp()") do
-              render_header
-              render_main
-              render_capture
-              render_dock
+              topbar
+              recent_assets
+              save_panel
+              dock
             end
           end
         end
@@ -42,7 +43,7 @@ module Domus
 
       private
 
-      def render_header
+      def topbar
         header(class: "topbar") do
           a(href: "/", class: "logo") do
             span(class: "logo-mark")
@@ -55,7 +56,7 @@ module Domus
       # captureApp() chooses for the viewport (upload on desktop, camera on
       # mobile), and the caret opens a drop-up menu with the alternate.
       # Both labels are rendered and toggled by media query.
-      def render_capture_control
+      def capture_control
         div(class: "capture", "@click.outside": "menuOpen = false") do
           div(class: "split") do
             button(
@@ -97,7 +98,7 @@ module Domus
         end
       end
 
-      def render_main
+      def recent_assets
         main(class: "wrap", "x-show": "state === 'capture'") do
           section do
             div(class: "sec-h") do
@@ -105,15 +106,15 @@ module Domus
               span(class: "sub") { plain "#{@total} tracked" } if @total.positive?
             end
             if @assets.empty?
-              render_empty
+              empty_state
             else
-              render_archive
+              archive
             end
           end
         end
       end
 
-      def render_archive
+      def archive
         div(class: "archive") do
           @assets.each do |asset|
             div(class: "entry") do
@@ -121,20 +122,20 @@ module Domus
               div(class: "body") do
                 div(class: "nm") { plain asset[:name] }
               end
-              span(class: "time") { plain relative_time(asset[:created_at]) }
+              span(class: "time") { plain RelativeTime.format(asset[:created_at]) }
             end
           end
         end
       end
 
-      def render_empty
+      def empty_state
         div(class: "archive empty") do
           p(class: "empty-line") { plain "Nothing tracked yet." }
         end
       end
 
       # The capture save step, shown once a photo or file has been chosen.
-      def render_capture
+      def save_panel
         div(class: "content", "x-show": "state === 'saved'", "x-cloak": true) do
           div(class: "card") do
             render CaptureForm.new
@@ -145,35 +146,10 @@ module Domus
       # The capture front door: a dock fixed to the bottom of the viewport on
       # every screen, so the primary action stays reachable and out of the
       # header.
-      def render_dock
+      def dock
         div(class: "dock", "x-show": "state === 'capture'") do
-          render_capture_control
+          capture_control
         end
-      end
-
-      # Compact, archival relative time — "now", "5m", "3h", "2d", "1w", "4mo".
-      def relative_time(at)
-        return "" unless at
-
-        seconds = (Time.now - at).to_i
-        return "now" if seconds < 60
-
-        minutes = seconds / 60
-        return "#{minutes}m" if minutes < 60
-
-        hours = minutes / 60
-        return "#{hours}h" if hours < 24
-
-        days = hours / 24
-        return "#{days}d" if days < 7
-
-        weeks = days / 7
-        return "#{weeks}w" if days < 30
-
-        months = days / 30
-        return "#{months}mo" if months < 12
-
-        "#{days / 365}y"
       end
     end
   end
