@@ -111,9 +111,13 @@ body {
 }
 
 .logo-mark {
-  width: 32px; height: 32px;
+  width: 28px; height: 28px;
   flex: none;
   display: block;
+  /* align-items:center centres on the text line box, which sits lower than
+     the letters themselves; lift the mark so its base meets the baseline. */
+  position: relative;
+  top: -2px;
 }
 .logo-mark svg {
   display: block;
