@@ -1,8 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+  <style>
+    .ink { stroke: #2a261f; }
+    .acc { stroke: #9a5a3c; }
+    @media (prefers-color-scheme: dark) {
+      .ink { stroke: #f3efe6; }
+    }
+  </style>
   <g fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-    <path stroke="#2a261f" d="M5 21 V9 L12 3.5 L19 9 V21 Z"/>
-    <line stroke="#9a5a3c" x1="8.5" y1="12.5" x2="15.5" y2="12.5"/>
-    <line stroke="#2a261f" x1="8.5" y1="15.5" x2="15.5" y2="15.5"/>
-    <line stroke="#2a261f" x1="8.5" y1="18.3" x2="13" y2="18.3"/>
+    <path class="ink" d="M5 21 V9 L12 3.5 L19 9 V21 Z"/>
+    <line class="acc" x1="8.5" y1="12.5" x2="15.5" y2="12.5"/>
+    <line class="ink" x1="8.5" y1="15.5" x2="15.5" y2="15.5"/>
+    <line class="ink" x1="8.5" y1="18.3" x2="13" y2="18.3"/>
   </g>
 </svg>
