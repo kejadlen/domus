@@ -8,7 +8,7 @@ Domus is where I keep household records. Today that's an inventory of the stuff 
 
 Inventory replaces [homebox](https://homebox.software/). Documents replace [paperless-ngx](https://docs.paperless-ngx.com/). Both do more than I need, and I want to keep only the parts I'll actually use.
 
-Scope is one household. No multi-tenancy, no public sharing, no login screen — authentication happens at the network layer via a reverse proxy header, same pattern as [ketchup](https://github.com/kejadlen/ketchup).
+Scope is one household. No multi-tenancy, no public sharing, no login screen — and no authentication in the app at all. The only way in is over my [Tailscale](https://tailscale.com/) network, so access control lives entirely at the network layer.
 
 ## Domain model
 
