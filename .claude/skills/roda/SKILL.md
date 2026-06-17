@@ -6,9 +6,14 @@ description: "Use this skill when working on Domus's HTTP layer — the Roda app
 # Roda routing
 
 Domus serves HTTP with [Roda](https://roda.jeremyevans.net) 3.103. The whole
-app is one class, `Domus::Web < Roda`, in `lib/web.rb`. Roda routes by
-*walking a tree* — the `route` block matches segments of the path as it
-descends, calling handlers when a branch matches.
+app is one class, `Domus::Web < Roda`, in `lib/web.rb`. Roda is a *routing
+tree*: the `route` block runs fresh per request and the request object `r`
+walks the path one segment at a time, executing the first branch that matches.
+
+Roda's core is tiny — almost every feature is a **plugin** you opt into. When
+you reach for behavior, check the
+[plugin list](https://roda.jeremyevans.net/documentation.html) before
+hand-rolling it.
 
 ## The routing tree
 
@@ -23,13 +28,13 @@ class Web < Roda
   end
 
   route do |r|
-    r.public                       # serve files from public/
+    r.public                       # serve a matching file from public/
 
-    r.root do                      # GET "/"
+    r.root do                      # GET "/"  (only the exact root)
       r.get { Views::Capture.new.call }
     end
 
-    r.on "files" do                # path prefix "/files"
+    r.on "files" do                # path PREFIX "files" — keeps descending
       r.post do                    # POST "/files"
         save_file(r.params)
         r.redirect "/"
@@ -39,28 +44,45 @@ class Web < Roda
 end
 ```
 
-Key matchers (the request is the `r` yielded to `route`):
+### `r.on` vs `r.is` — the distinction that bites
 
-- **`r.root`** — matches `GET /` (combined with `r.get` inside).
-- **`r.on "files"`** — matches the path *prefix* `files` and descends; nest
-  verb matchers inside.
-- **`r.get` / `r.post`** — match the HTTP verb (and optionally remaining path).
-- **`r.params`** — merged GET/POST params.
-- **`r.redirect "/"`** — 302 redirect (halts the route).
-- **`r.public`** — serve a static file from `public/` if one matches.
+- **`r.on(matcher)`** matches a path *prefix* and keeps walking the tree. Use
+  it to branch: `r.on "files" do … end` handles `/files`, `/files/123`, etc.
+- **`r.is(matcher)`** matches only when the path is *fully consumed* after the
+  matcher. Use it for a terminal/leaf route.
+- **`r.root`** is sugar for `GET /` exactly.
+- **`r.get` / `r.post`** (and, via `:all_verbs`, `r.put`/`r.patch`/`r.delete`)
+  match the HTTP verb. Inside `r.on`, pair them with the verb to pin a route.
 
-Return value of the matched block is the response body. A view renders with
-`Views::Capture.new.call` (a Phlex string).
+Domus only branches on `r.on "files"` today; if you add `/files/:id` actions,
+prefer `r.on "files" do … r.is Integer do |id| … end … end` so the bare
+`/files` collection and the `/files/123` member don't collide.
 
-## Plugins in use
+### Matchers and captures
 
-- **`:public`** — static files from `public/` via `r.public`.
-- **`:all_verbs`** — adds `r.put`, `r.patch`, `r.delete`, etc.
-- **`:error_handler`** — wraps the route in a rescue; see error handling below.
+- **String** — `r.on "files"` matches that segment.
+- **Class** — `r.is Integer do |id|` matches a numeric segment and yields it;
+  `String` matches any non-empty segment.
+- **Array** — `r.on %w[new edit]` matches either, yields the match.
+- **Regexp** — yields capture groups as block args.
 
-Add a plugin with `plugin :name` at class level. Check the
-[plugin list](https://roda.jeremyevans.net/documentation.html) before
-hand-rolling behavior — Roda ships most of what you'd want.
+Captured segments arrive as block parameters: `r.is("user", Integer) { |id| }`.
+
+### What a matched block returns
+
+The return value of the matched block becomes the response body (a string).
+That's why `r.get { Views::Capture.new.call }` works — the Phlex string is the
+body. Default status is 200 with a body, 404 with none.
+
+## Request and response
+
+- **`r.params`** — merged GET/POST params (the upload `Hash` for a multipart
+  file lives here as `params["file"]`).
+- **`r.redirect "/"`** — 302 (pass a status for others); halts the route.
+- **`response.status = 422`**, `response["Header"] = "…"` — set on the
+  response object directly.
+- **`r.halt`** — short-circuit with a full Rack response (needs the `:halt`
+  plugin; not currently loaded).
 
 ## Error handling
 
@@ -73,10 +95,23 @@ class ClientError < StandardError
 end
 ```
 
-Route code raises it for bad input (`raise ClientError, "Choose a file…"`),
-and the `:error_handler` plugin renders it with the right status. Anything
-that isn't a `ClientError` is re-raised. Prefer raising `ClientError` over
-manually setting `response.status` in handlers.
+Route code raises it for bad input (`raise ClientError, "Choose a file…"`).
+The **`:error_handler`** plugin wraps the whole route in a rescue: it renders a
+`ClientError` with its status, and re-raises anything else (so real bugs still
+surface as 500s). Prefer raising `ClientError` over poking `response.status`
+in handlers — it keeps the status next to the reason.
+
+## Plugins in use
+
+- **`:public`** — serve static files from `public/` via `r.public` (GET only,
+  guards against directory traversal).
+- **`:all_verbs`** — adds `r.put`, `r.patch`, `r.delete`, … matchers.
+- **`:error_handler`** — the rescue wrapper described above.
+
+Worth knowing for later: `:render` (Tilt templates — Domus uses Phlex
+instead), `:json`, `:head`, `:not_found`, `:sessions`, and **`:route_csrf`**
+(request-specific CSRF tokens; reach for it before adding any browser-facing
+state-changing form beyond the current trusted-header setup).
 
 ## Dependency injection via `opts`
 
@@ -92,14 +127,14 @@ def app = opts.fetch(:app)
 def db  = app.db
 ```
 
-Use `opts.fetch(:app)` (not `[]`) so a missing wiring fails loudly. Tests set
-the same key against an in-memory app.
+Use `opts.fetch(:app)` (not `[]`) so missing wiring fails loudly. Tests set
+the same key against an in-memory app. In production you can `Web.freeze` to
+lock `opts` and catch accidental runtime mutation / thread-safety bugs.
 
 ## Bootstrapping
 
 `config.ru` builds the `App`, runs pending Sequel migrations, wires
-`opts[:app]`, then `run Domus::Web`. The dev server is `rake dev`
-(port 9292).
+`opts[:app]`, then `run Domus::Web`. The dev server is `rake dev` (port 9292).
 
 ## Testing
 

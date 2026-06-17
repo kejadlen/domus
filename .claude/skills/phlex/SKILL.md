@@ -6,18 +6,32 @@ description: "Use this skill when writing or editing Domus's HTML views — the 
 # Phlex views
 
 Domus renders HTML with [Phlex](https://www.phlex.fun) 2.4 — views are Ruby
-objects, and every HTML element is a method call. No templates, no ERB.
+objects and every HTML element is a method call. No templates, no ERB. Output
+is escaped by default, which is the whole point: Phlex is built to make XSS
+structurally hard.
 
-> The Gemfile pins a **fork** (`github.com/kejadlen/phlex.git`) that silences
-> the method-redefinition warnings Phlex 2.4 emits under `-w`. Treat the API
-> as upstream Phlex 2.x.
+> The Gemfile pins a **fork** (`github.com/kejadlen/phlex.git`) that only
+> silences the method-redefinition warnings Phlex 2.4 emits under `-w`. The
+> API is upstream Phlex 2.x — treat the official docs as authoritative.
+
+## Phlex 2 vs 1 — don't trust v1 examples
+
+Phlex 2 renamed core API. Most blog posts and LLM memory describe v1; the
+renames below will silently misbehave if you copy v1 code:
+
+| v1 | v2 | gotcha if you use the old name |
+|---|---|---|
+| `def template` | **`def view_template`** | `template` now emits a `<template>` element |
+| `text "x"` | **`plain "x"`** | `text` is gone (it clashed with SVG `<text>`) |
+| `Phlex::View` | **`Phlex::HTML`** / `Phlex::SVG` | `Phlex::View` was removed |
 
 ## Where views live
 
 - **`lib/views/`** — one class per view (`Layout`, `Capture`).
-- Each subclasses `Phlex::HTML` and defines `#view_template`.
-- A Roda route renders a view by instantiating it and calling `#call`:
-  `Views::Capture.new.call` (see `lib/web.rb`).
+- Each subclasses `Phlex::HTML` and defines **`#view_template`**.
+- A Roda route renders a view by instantiating and calling it:
+  `Views::Capture.new.call` (see `lib/web.rb`). `#call` returns the HTML
+  string.
 
 ## Anatomy of a view
 
@@ -28,7 +42,7 @@ module Domus
   module Views
     class Capture < Phlex::HTML
       def view_template
-        doctype
+        doctype                       # => <!DOCTYPE html>
         html(lang: "en") do
           head { title { "Domus" } }
           body { render_main }
@@ -46,26 +60,41 @@ end
 ```
 
 - **`view_template`** is the entry point — emit the page here.
-- Each tag is a method: `div`, `header`, `a`, `button`, `input`, `img`, …
+- Every tag is a method: `div`, `header`, `a`, `button`, `input`, `img`, …
 - A block becomes the element's children; nest blocks to nest markup.
-- Break a view into `private` helper methods (`render_header`,
-  `render_main`) — that's the house style in `capture.rb`.
+- Split a view into `private` helper methods (`render_header`, `render_main`)
+  and call them plainly — that's the house style in `capture.rb`. (To render
+  *another component*, use `render OtherView.new(...)`, not a method call.)
+
+## Text and content
+
+- **`plain "text"`** — escaped text content. Use it for every literal string
+  inside an element: `h2 { plain "Add an image" }`. A bare string inside a
+  block is *not* emitted — you must call `plain`.
+- **`whitespace`** — emit a single space (to let inline elements wrap).
+- **`comment { "…" }`** — an HTML comment.
 
 ## Attributes
 
-Pass attributes as keyword/hash arguments. Use string keys for anything
-that isn't a plain identifier (dashes, `@`, `:`, `x-`):
+Pass attributes as keyword/hash arguments. Two key behaviors to know:
+
+- **Symbol keys** convert underscores to dashes: `data_id: 1` → `data-id="1"`.
+  There's also a nested shorthand: `data: { controller: "x" }` →
+  `data-controller="x"`.
+- **String keys** are emitted verbatim — required for names with `@`, `:`, or
+  `.`, and the safe choice for anything non-trivial.
+- **Booleans**: `disabled: true` emits `disabled`; `disabled: false` omits it.
+- All attribute **values are escaped** automatically.
 
 ```ruby
-div(class: "card", id: "main")                 # symbol keys for simple names
-input(type: "file", name: "file", accept: "image/*")
+input(type: "file", name: "file", accept: "image/*")   # symbol keys, simple
 a(href: "/", class: "logo") { plain "domus" }
 ```
 
 ### Alpine.js attributes
 
-Domus drives interactivity with Alpine, so views are full of `x-`, `@`, and
-`:` attributes. These must be **string keys**:
+Domus drives interactivity with Alpine, so views carry `x-`, `@`, and `:`
+attributes. These are not valid Ruby symbol names, so use **string keys**:
 
 ```ruby
 div(
@@ -77,28 +106,35 @@ div(
 end
 ```
 
-## Text and raw HTML
+## Raw HTML and the escape boundary
 
-- **`plain "text"`** — emit escaped text content. Use it for any literal
-  string inside an element (`h2 { plain "Add an image" }`).
-- **`raw safe(html)`** — emit a pre-trusted HTML string *without* escaping.
-  Only for strings you control. Domus inlines SVG icons this way:
+Phlex escapes `plain` text and all attribute values. To emit HTML *verbatim*
+you must opt out — and Phlex makes you do it in two deliberate steps:
+
+```ruby
+raw(safe(trusted_html))
+```
+
+- **`safe(str)`** wraps the string in a `Phlex::SGML::SafeObject`, asserting
+  you trust it. `raw` only accepts a safe object (or it raises), so you can't
+  emit unescaped HTML by accident.
+- Domus uses this to inline pre-read SVG icon files:
 
 ```ruby
 ICONS = Hash.new { |cache, name| cache[name] = File.read("…/#{name}.svg").freeze }
 
 def icon(name)
-  raw safe(ICONS[name])   # safe() marks it trusted; raw emits it verbatim
+  raw safe(ICONS[name])   # trusted, on-disk SVG — never user input
 end
 ```
 
-Never pass user input to `raw safe` — that's an XSS hole. Everything else
-(`plain`, attribute values) is escaped by Phlex automatically.
+**Never** pass user input through `raw safe` — that reopens the XSS hole Phlex
+closes. Keep it to static assets and HTML you generated yourself.
 
 ## Layouts
 
 `Layout` takes the page content as a block and wraps it in the `<html>`
-shell. Compose by yielding inside `view_template`:
+shell. Yield the block inside `view_template`:
 
 ```ruby
 class Layout < Phlex::HTML
@@ -117,6 +153,9 @@ class Layout < Phlex::HTML
 end
 ```
 
+Store constructor args in instance variables (`@title`) and read them in
+`view_template` — Phlex 2 is explicit, nothing is auto-copied in.
+
 ## Styling
 
 Views reference the Calm Archive design tokens via CSS classes in
@@ -125,6 +164,6 @@ Views reference the Calm Archive design tokens via CSS classes in
 
 ## Testing
 
-Views are exercised end-to-end through Roda routes with `rack-test`; assert
-on `last_response.body` (see `test/test_app.rb`). There's no separate view
-unit test — render through the route.
+Views are exercised end-to-end through Roda routes with `rack-test`; assert on
+`last_response.body` (see `test/test_app.rb`). There's no separate view unit
+test — render through the route.
