@@ -13,7 +13,8 @@ Roda app's `opts`.
 
 ```ruby
 # lib/app.rb
-@db = Sequel.sqlite(config.database_url)   # file path, or ":memory:" in tests
+@db = Sequel.sqlite(config.database_url, foreign_keys: true)
+#                   file path, or ":memory:" in tests
 ```
 
 `App#db` is the `Sequel::Database`. Routes reach it via `app.db` (see the
@@ -21,11 +22,11 @@ Roda app's `opts`.
 migrations into it (`test/test_helper.rb`). A `:memory:` database is private to
 its single connection — fine for the test suite's one-connection use.
 
-> **SQLite foreign keys are OFF by default.** Sequel doesn't enable them unless
-> you pass `foreign_keys: true` to `Sequel.sqlite`. So the `foreign_key`
-> columns in the schema document intent and create indexes, but SQLite is not
-> currently enforcing referential integrity at runtime. Keep that in mind
-> before relying on cascade/restrict behavior.
+> **Foreign keys are enforced.** Raw SQLite leaves `PRAGMA foreign_keys` off,
+> but Sequel's SQLite adapter turns it on for every connection by default, and
+> `lib/app.rb` also passes `foreign_keys: true` explicitly so the intent is
+> visible and pinned. So the `foreign_key` columns enforce referential
+> integrity at runtime — cascade / restrict behavior applies.
 
 ## Schema
 
