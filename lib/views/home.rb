@@ -34,7 +34,6 @@ module Domus
               render_header
               render_main
               render_capture
-              render_footer
               render_dock
             end
           end
@@ -49,7 +48,6 @@ module Domus
             span(class: "logo-mark")
             plain "domus"
           end
-          render_actions(class: "actions", "x-show": "state === 'capture'")
         end
       end
 
@@ -119,14 +117,9 @@ module Domus
         end
       end
 
-      def render_footer
-        footer(class: "foot", "x-show": "state === 'capture'") do
-          span(class: "fm") { plain "v1.0" }
-        end
-      end
-
-      # On small screens the capture actions move to a thumb-reachable dock
-      # fixed to the bottom of the viewport; it's hidden on wider screens.
+      # The capture front door: a dock fixed to the bottom of the viewport on
+      # every screen, so the primary action stays reachable and out of the
+      # header.
       def render_dock
         render_actions(class: "dock", "x-show": "state === 'capture'")
       end
