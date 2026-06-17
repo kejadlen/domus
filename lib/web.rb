@@ -3,7 +3,6 @@
 require "roda"
 require "fileutils"
 require_relative "views/layout"
-require_relative "views/capture"
 require_relative "views/home"
 
 module Domus
@@ -38,12 +37,6 @@ module Domus
         r.get do
           assets = db[:assets].order(Sequel.desc(:created_at), Sequel.desc(:id)).limit(12).all
           Views::Home.new(assets:, total: db[:assets].count).call
-        end
-      end
-
-      r.on "capture" do
-        r.get do
-          Views::Capture.new.call
         end
       end
 

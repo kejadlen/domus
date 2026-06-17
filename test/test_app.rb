@@ -56,12 +56,6 @@ class TestApp < Minitest::Test
     refute_includes body, 'href="/capture"'
   end
 
-  def test_capture_page
-    get "/capture"
-    assert_equal 200, last_response.status
-    assert_includes last_response.body, "Add an image"
-  end
-
   def test_upload_image_saves_file_and_redirects
     post "/files", "file" => upload("photo.png", "image/png", "fake-png-bytes")
 
