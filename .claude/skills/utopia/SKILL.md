@@ -37,9 +37,11 @@ The design-system scale uses:
 Space multiples off the base: 0.25 / 0.5 / 0.75 / 1 / 1.5 / 2 / 3 / 4 / 6
 (→ `3xs` … `3xl`). Utopia can also emit one-up pairs (`--space-s-m`, …).
 
-> The shipped `public/app.css` currently carries an older scale (viewport
-> 320→1280, ratio 1.25). When restyling toward the design system, regenerate
-> it from the config above so it matches `domus-tokens.css`.
+> `public/app.css` and `docs/design/domus-tokens.css` are in sync — same
+> config, identical `--step-*` / `--space-*` clamps. The only difference is
+> the one-up pairs (`--space-s-m`, etc.), which live in `domus-tokens.css`
+> but aren't shipped in `app.css` because no rule uses them yet. When you
+> change the scale, regenerate from the config above and update both files.
 
 ## How a step is computed
 

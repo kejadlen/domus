@@ -5,12 +5,17 @@ require "phlex"
 module Domus
   module Views
     class Layout < Phlex::HTML
-      def initialize(title: "Domus", &content)
+      ALPINE = "https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+
+      # `scripts` are emitted (deferred) before Alpine so page scripts that
+      # register Alpine components — e.g. /capture.js defining captureApp() —
+      # run first. Order matters: deferred scripts execute in document order.
+      def initialize(title: "Domus", scripts: [])
         @title = title
-        @content = content
+        @scripts = scripts
       end
 
-      def view_template
+      def view_template(&block)
         doctype
 
         html(lang: "en") do
@@ -19,12 +24,11 @@ module Domus
             meta(name: "viewport", content: "width=device-width, initial-scale=1")
             title { @title }
             link(rel: "stylesheet", href: "/app.css")
-            script(defer: true, src: "https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js")
+            @scripts.each { |src| script(defer: true, src:) }
+            script(defer: true, src: ALPINE)
           end
 
-          body do
-            yield
-          end
+          body(&block)
         end
       end
     end
