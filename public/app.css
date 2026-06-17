@@ -111,13 +111,9 @@ body {
 }
 
 .logo-mark {
-  width: 26px; height: 26px;
+  width: 32px; height: 32px;
   flex: none;
   display: block;
-  /* Optical nudge: the lowercase serif wordmark's visual mass sits below
-     the line-box centre, so drop the mark to sit with it. */
-  position: relative;
-  top: 1px;
 }
 .logo-mark svg {
   display: block;
