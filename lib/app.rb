@@ -9,7 +9,7 @@ module Domus
 
     def initialize(config = Config.env)
       @config = config
-      @db = Sequel.sqlite(config.database_url, foreign_keys: true)
+      @db = Sequel.sqlite(config.database_url)
     end
 
     def file_path(record)
