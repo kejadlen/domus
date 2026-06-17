@@ -8,10 +8,10 @@ module Domus
     # and can be sized and recoloured with CSS. Mixed into the Phlex views
     # that draw icons.
     module Icons
-      ICONS_DIR = Pathname(__dir__).join("../../public/icons").expand_path
+      ICONS_DIR = (Pathname(__dir__) / "../../public/icons").expand_path
 
       ICONS = Hash.new do |cache, name|
-        cache[name] = ICONS_DIR.join("#{name}.svg").read.freeze
+        cache[name] = (ICONS_DIR / "#{name}.svg").read.freeze
       end
 
       def icon(name)
