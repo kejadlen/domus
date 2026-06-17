@@ -40,6 +40,12 @@ module Domus
         end
       end
 
+      # POST /files has no CSRF token check. Domus authenticates via the
+      # reverse proxy's trusted X-Forwarded-User header (see
+      # lib/middleware/auth.rb), not cookie sessions, so there's no ambient
+      # credential a forged cross-site POST could ride on. If this app ever
+      # adopts cookie-based sessions, load the Roda :route_csrf plugin and
+      # verify the token here before accepting the upload.
       r.on "files" do
         r.post do
           save_file(r.params)

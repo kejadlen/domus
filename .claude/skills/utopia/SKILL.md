@@ -8,8 +8,12 @@ description: "Use this skill when working with Domus's fluid type and space scal
 Domus scales type and spacing with [Utopia](https://utopia.fyi): each step is
 one `clamp()` that interpolates between a **min** size (at the min viewport)
 and a **max** size (at the max viewport). Below the min viewport the value
-pins to the min; above the max viewport it pins to the max. Everything is in
-`rem`, so it also respects the user's browser font-size preference.
+pins to the min; above the max viewport it pins to the max — so there are no
+breakpoints to manage.
+
+Everything is in `rem`, never `px`. That isn't cosmetic: a `px`-bounded
+`clamp()` can't be zoomed, which fails WCAG 1.4.4 (resize text). Keep the
+bounds in `rem` so the scale tracks the user's browser font-size and zoom.
 
 ## Where the tokens live
 
@@ -33,9 +37,11 @@ The design-system scale uses:
 Space multiples off the base: 0.25 / 0.5 / 0.75 / 1 / 1.5 / 2 / 3 / 4 / 6
 (→ `3xs` … `3xl`). Utopia can also emit one-up pairs (`--space-s-m`, …).
 
-> The shipped `public/app.css` currently carries an older scale (viewport
-> 320→1280, ratio 1.25). When restyling toward the design system, regenerate
-> it from the config above so it matches `domus-tokens.css`.
+> `public/app.css` and `docs/design/domus-tokens.css` are in sync — same
+> config, identical `--step-*` / `--space-*` clamps. The only difference is
+> the one-up pairs (`--space-s-m`, etc.), which live in `domus-tokens.css`
+> but aren't shipped in `app.css` because no rule uses them yet. When you
+> change the scale, regenerate from the config above and update both files.
 
 ## How a step is computed
 
@@ -60,8 +66,14 @@ interceptPx = 18 - 0.0021739 * 320 = 17.30435px → 1.0815rem
 
 Type steps are derived by multiplying/dividing the body by the ratio
 (`step n = body * ratio^n`), using the **min ratio** for min sizes and the
-**max ratio** for max sizes. Space steps are the base size times the
-multiples above.
+**max ratio** for max sizes. Negative steps (`--step--1`, `--step--2`) divide
+instead of multiply; Utopia keeps these shallow because deep negatives become
+illegible. Space steps are the base size times the multiples above.
+
+> **Accessibility check.** A step where `max` is more than ~2.5× its `min` can
+> fail the 200%-zoom requirement. Utopia's calculators now flag these; keep
+> type bounds within that ratio. (For Domus this is comfortably satisfied —
+> body only goes 18→20px.)
 
 ## Generating tokens
 
@@ -75,6 +87,15 @@ Set viewport 320 → 1240, body 18 → 20, ratio 1.20 → 1.25, then copy the
 emitted `--step-*` / `--space-*` clamps. Verify a new value against an
 existing one in `docs/design/domus-tokens.css` (e.g. step 0 must stay
 `clamp(1.125rem, 1.0815rem + 0.2174vw, 1.25rem)`) so the scale matches.
+
+The space calculator can also emit **one-up pairs** like `--space-s-m` —
+a single `clamp()` whose min is step `s` and max is step `m`, useful for a gap
+that grows by a full step across the viewport range. Add them only if a layout
+needs them; don't bulk-generate pairs.
+
+> Newer Utopia tooling can target `cqi`/`cqw` (container queries) or `vi`
+> (logical inline axis) instead of `vw`. Domus's tokens are `vw`-based — stay
+> on `vw` unless you're deliberately introducing container-relative scaling.
 
 ## Using the tokens
 

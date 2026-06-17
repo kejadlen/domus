@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "phlex"
+require_relative "layout"
 require_relative "icons"
 require_relative "capture_form"
 require_relative "../relative_time"
@@ -20,23 +21,12 @@ module Domus
       end
 
       def view_template
-        doctype
-        html(lang: "en") do
-          head do
-            meta(charset: "utf-8")
-            meta(name: "viewport", content: "width=device-width, initial-scale=1")
-            title { "Domus" }
-            link(rel: "stylesheet", href: "/app.css")
-            script(defer: true, src: "/capture.js")
-            script(defer: true, src: "https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js")
-          end
-          body do
-            div(class: "page", "x-data": "captureApp()") do
-              topbar
-              recent_assets
-              save_panel
-              dock
-            end
+        render Layout.new(scripts: ["/capture.js"]) do
+          div(class: "page", "x-data": "captureApp()") do
+            topbar
+            recent_assets
+            save_panel
+            dock
           end
         end
       end
