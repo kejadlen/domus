@@ -19,11 +19,41 @@ class TestApp < Minitest::Test
     domus.db[:files].delete
   end
 
-  def test_root
+  def test_root_renders_home
     get "/"
     assert_equal 200, last_response.status
     assert_includes last_response.body, "Domus"
-    assert_includes last_response.body, "Add an image"
+    assert_includes last_response.body, "Recent assets"
+  end
+
+  def test_root_lists_recent_assets_newest_first
+    now = Time.now
+    domus.db[:assets].insert(name: "Older asset", created_at: now - 86_400)
+    domus.db[:assets].insert(name: "Newer asset", created_at: now)
+
+    get "/"
+    assert_equal 200, last_response.status
+    body = last_response.body
+    assert_includes body, "Older asset"
+    assert_includes body, "Newer asset"
+    assert_operator body.index("Newer asset"), :<, body.index("Older asset")
+  end
+
+  def test_root_empty_state
+    get "/"
+    assert_equal 200, last_response.status
+    assert_includes last_response.body, "Nothing tracked yet."
+  end
+
+  def test_root_capture_actions_open_picker_in_place
+    get "/"
+    body = last_response.body
+    # The capture flow is embedded, so the split button opens the picker in
+    # place (primary + alternate) rather than navigating away.
+    assert_includes body, "captureApp()"
+    assert_includes body, "capturePrimary()"
+    assert_includes body, "captureAlternate()"
+    refute_includes body, 'href="/capture"'
   end
 
   def test_upload_image_saves_file_and_redirects

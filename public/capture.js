@@ -5,6 +5,16 @@ function captureApp() {
     dragging: false,
     activeRef: null,
     assetNames: [''],
+    menuOpen: false,
+
+    // The primary capture action defaults to uploading a file on desktop
+    // and taking a photo on mobile; the dropdown exposes the other one.
+    get onMobile() { return window.matchMedia('(max-width: 560px)').matches; },
+    capturePrimary() { (this.onMobile ? this.$refs.cameraInput : this.$refs.fileInput).click(); },
+    captureAlternate() {
+      this.menuOpen = false;
+      (this.onMobile ? this.$refs.fileInput : this.$refs.cameraInput).click();
+    },
 
     handleFile(file, ref) {
       if (!file) return;

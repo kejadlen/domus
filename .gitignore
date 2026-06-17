@@ -1,3 +1,7 @@
 /db/*.db
 .bundle/
 /vendor/
+
+# Generated bundler binstubs (bin/setup is tracked; the rest are local)
+/bin/*
+!/bin/setup

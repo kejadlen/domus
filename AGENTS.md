@@ -25,6 +25,12 @@ When building or changing any UI:
 - Reference the design tokens (`--w-*`, `--step-*`, `--space-*`) rather than
   hard-coding colors, font sizes, or spacing. Use the fluid `--step-*` /
   `--space-*` scales for type and spacing instead of fixed pixels.
+- **Design prototypes are written in fixed `px` — do not copy those values
+  verbatim.** When implementing, map every font size, gap, padding, and
+  margin onto the nearest `--step-*` / `--space-*` token. Only structural
+  details stay in `px`: border widths, icon and fixed tap-target dimensions,
+  `border-radius`, container `max-width`, media-query breakpoints, and
+  shadow offsets.
 - Keep it calm: flat surfaces, hairline rules, one accent per view, no
   gradients or bounce. Mono uppercase labels for field/meta/catalog text.
 - Write copy in the archival voice — plain and unhurried, never marketing.
