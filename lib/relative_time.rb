@@ -1,5 +1,4 @@
 # rbs_inline: enabled
-# frozen_string_literal: true
 
 module Domus
   # Formats a timestamp as a compact, archival relative age —

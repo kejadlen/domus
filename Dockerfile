@@ -1,5 +1,7 @@
 FROM ruby:4.0-slim AS base
 
+ENV RUBYOPT="--enable-frozen-string-literal"
+
 # git is required for git-sourced gem dependencies.
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
