@@ -110,12 +110,15 @@ class TestApp < Minitest::Test
     assert_includes last_response.body, %(src="/files/#{file_id}.png")
   end
 
-  def test_asset_detail_without_images_omits_photos
+  def test_asset_detail_without_images_shows_photos_add_affordance
     id = domus.db[:assets].insert(name: "Bare", created_at: Time.now)
 
     get "/assets/#{id}"
     assert_equal 200, last_response.status
-    refute_includes last_response.body, 'class="photos"'
+    # The photos section always renders (with the add affordance); there
+    # just aren't any <img> tiles when nothing is attached.
+    assert_includes last_response.body, "addphoto"
+    refute_includes last_response.body, "<img"
   end
 
   def test_get_file_serves_stored_image
