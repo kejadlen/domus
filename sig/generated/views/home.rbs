@@ -1,0 +1,42 @@
+# Generated from lib/views/home.rb with RBS::Inline
+
+module Domus
+  module Views
+    # The home page — the archive's front door. Capture actions live in a
+    # thumb-reachable dock and open the picker in place: the whole page is one
+    # captureApp() Alpine component, so choosing a file swaps the recent-asset
+    # list for the save form.
+    class Home < Phlex::HTML
+      include Icons
+
+      # : (assets: Array[Hash[Symbol, untyped]], total: Integer) -> void
+      def initialize: (assets: untyped, total: untyped) -> untyped
+
+      def view_template: () -> untyped
+
+      private
+
+      def topbar: () -> untyped
+
+      # A single split button: the primary action opens the picker
+      # captureApp() chooses for the viewport (upload on desktop, camera on
+      # mobile), and the caret opens a drop-up menu with the alternate.
+      # Both labels are rendered and toggled by media query.
+      def capture_control: () -> untyped
+
+      def recent_assets: () -> untyped
+
+      def archive: () -> untyped
+
+      def empty_state: () -> untyped
+
+      # The capture save step, shown once a photo or file has been chosen.
+      def save_panel: () -> untyped
+
+      # The capture front door: a dock fixed to the bottom of the viewport on
+      # every screen, so the primary action stays reachable and out of the
+      # header.
+      def dock: () -> untyped
+    end
+  end
+end

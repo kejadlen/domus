@@ -1,3 +1,4 @@
+# rbs_inline: enabled
 # frozen_string_literal: true
 
 require "roda"
@@ -11,6 +12,7 @@ module Domus
   class ClientError < StandardError
     attr_reader :status
 
+    # : (String message, ?status: Integer) -> void
     def initialize(message, status: 422)
       super(message)
       @status = status
@@ -56,11 +58,14 @@ module Domus
 
     private
 
+    # : () -> App
     def app = opts.fetch(:app)
+    # : () -> Sequel::Database
     def db = app.db
 
     # Persists an uploaded image, raising ClientError when the upload is
     # rejected so the error_handler plugin can render the right status.
+    # : (Hash[String, untyped]) -> void
     def save_file(params)
       upload = params["file"]
       raise ClientError, "Choose a file to upload." unless upload.is_a?(Hash) && upload[:tempfile]

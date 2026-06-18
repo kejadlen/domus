@@ -1,0 +1,20 @@
+# Generated from lib/views/icons.rb with RBS::Inline
+
+module Domus
+  module Views
+    # Inlines the SVG files from public/icons so they inherit currentColor
+    # and can be sized and recoloured with CSS. Mixed into the Phlex views
+    # that draw icons.
+    module Icons
+      ICONS_DIR: untyped
+
+      ICONS: untyped
+
+      # : (String name) -> void
+      def icon: (untyped name) -> untyped
+
+      def raw: (String) -> void
+      def safe: (String) -> String
+    end
+  end
+end

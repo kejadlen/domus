@@ -1,0 +1,17 @@
+# Generated from lib/views/layout.rb with RBS::Inline
+
+module Domus
+  module Views
+    class Layout < Phlex::HTML
+      ALPINE: ::String
+
+      # `scripts` are emitted (deferred) before Alpine so page scripts that
+      # register Alpine components — e.g. /capture.js defining captureApp() —
+      # run first. Order matters: deferred scripts execute in document order.
+      # : (?title: String, ?scripts: Array[String]) -> void
+      def initialize: (?title: untyped, ?scripts: untyped) -> untyped
+
+      def view_template: () ?{ (?) -> untyped } -> untyped
+    end
+  end
+end

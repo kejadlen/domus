@@ -1,3 +1,4 @@
+# rbs_inline: enabled
 # frozen_string_literal: true
 
 module Domus
@@ -6,6 +7,7 @@ module Domus
   module RelativeTime
     module_function
 
+    # : (Time at, ?now: Time) -> String
     def format(at, now: Time.now)
       return "" unless at
 

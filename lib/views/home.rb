@@ -1,3 +1,4 @@
+# rbs_inline: enabled
 # frozen_string_literal: true
 
 require "phlex"
@@ -15,6 +16,7 @@ module Domus
     class Home < Phlex::HTML
       include Icons
 
+      # : (assets: Array[Hash[Symbol, untyped]], total: Integer) -> void
       def initialize(assets:, total:)
         @assets = assets
         @total = total

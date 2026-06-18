@@ -1,3 +1,4 @@
+# rbs_inline: enabled
 # frozen_string_literal: true
 
 require "phlex"
@@ -10,6 +11,7 @@ module Domus
       # `scripts` are emitted (deferred) before Alpine so page scripts that
       # register Alpine components — e.g. /capture.js defining captureApp() —
       # run first. Order matters: deferred scripts execute in document order.
+      # : (?title: String, ?scripts: Array[String]) -> void
       def initialize(title: "Domus", scripts: [])
         @title = title
         @scripts = scripts

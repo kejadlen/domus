@@ -1,0 +1,74 @@
+# Shim declarations for gems without RBS in this environment.
+# Covers only the methods actually used in the Domus codebase.
+
+module Sequel
+  def self.sqlite: (String) -> Sequel::Database
+  def self.desc: (Symbol) -> untyped
+
+  class Database
+    def []: (Symbol) -> Sequel::Dataset
+    def transaction: () { () -> void } -> void
+  end
+
+  class Dataset
+    def order: (*untyped) -> Sequel::Dataset
+    def limit: (Integer) -> Sequel::Dataset
+    def all: () -> Array[Hash[Symbol, untyped]]
+    def count: () -> Integer
+    def insert: (Hash[Symbol, untyped]) -> Integer
+  end
+
+  class Model
+  end
+end
+
+class Roda
+  # Class-level DSL
+  def self.plugin: (Symbol) ?{ (Class) -> void } -> void
+  def self.route: () { (Roda) -> void } -> void
+
+  # Instance-level DSL (used inside route blocks)
+  def db: () -> Sequel::Database
+  def response: () -> untyped
+  def opts: () -> Hash[Symbol, untyped]
+end
+
+module Phlex
+  class HTML
+    def self.new: (**untyped) -> instance
+
+    def view_template: () { () -> void } -> void
+    def render: (untyped) ?{ () -> void } -> void
+    def call: () -> String
+
+    # HTML elements used in views
+    def doctype: () -> void
+    def html: (?lang: String) { () -> void } -> void
+    def head: () { () -> void } -> void
+    def body: () ?{ () -> void } -> void
+    def meta: (?charset: String, ?name: String, ?content: String) -> void
+    def title: () { () -> void } -> void
+    def link: (?rel: String, ?type: String, ?href: String) -> void
+    def script: (?defer: bool, ?src: String) -> void
+    def div: (?class: String, **untyped) { () -> void } -> void
+    def span: (?class: String, **untyped) { () -> void } -> void
+    def a: (?href: String, ?class: String, **untyped) { () -> void } -> void
+    def h3: (**untyped) { () -> void } -> void
+    def p: (?class: String, **untyped) { () -> void } -> void
+    def section: (**untyped) { () -> void } -> void
+    def header: (?class: String, **untyped) { () -> void } -> void
+    def main: (?class: String, **untyped) { () -> void } -> void
+    def form: (?method: String, ?action: String, ?enctype: String, **untyped) { () -> void } -> void
+    def input: (?type: String, ?name: String, ?accept: String, ?capture: String, ?class: String, ?placeholder: String, **untyped) -> void
+    def button: (?type: String, ?class: String, **untyped) { () -> void } -> void
+    def img: (?alt: String, **untyped) -> void
+    def template: (**untyped) { () -> void } -> void
+
+    # Text output
+    def plain: (String) -> void
+
+    # Raw HTML
+    def raw: (String) -> void
+    def safe: (String) -> String
+  end
+end

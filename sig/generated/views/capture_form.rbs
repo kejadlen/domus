@@ -1,0 +1,15 @@
+# Generated from lib/views/capture_form.rb with RBS::Inline
+
+module Domus
+  module Views
+    # The save step of a capture: the hidden camera/file inputs plus the
+    # preview and asset-naming form. Driven by the captureApp() Alpine data,
+    # and shared by both the capture page and the home page so the capture
+    # actions can open the picker in place.
+    class CaptureForm < Phlex::HTML
+      include Icons
+
+      def view_template: () -> untyped
+    end
+  end
+end

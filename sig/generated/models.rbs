@@ -1,5 +1,4 @@
-# rbs_inline: enabled
-# frozen_string_literal: true
+# Generated from lib/models.rb with RBS::Inline
 
 module Domus
   class Document < Sequel::Model

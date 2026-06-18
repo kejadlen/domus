@@ -1,0 +1,10 @@
+# Generated from lib/relative_time.rb with RBS::Inline
+
+module Domus
+  # Formats a timestamp as a compact, archival relative age —
+  # "now", "5m", "3h", "2d", "1w", "4mo", "2y".
+  module RelativeTime
+    # : (Time at, ?now: Time) -> String
+    def self?.format: (untyped at, ?now: untyped) -> untyped
+  end
+end

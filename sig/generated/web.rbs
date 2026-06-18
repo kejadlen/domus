@@ -1,0 +1,31 @@
+# Generated from lib/web.rb with RBS::Inline
+
+module Domus
+  # Raised when a request can't be processed because of client input. The
+  # error_handler plugin renders it with the HTTP status it carries.
+  class ClientError < StandardError
+    attr_reader status: untyped
+
+    # : (String message, ?status: Integer) -> void
+    def initialize: (untyped message, ?status: untyped) -> untyped
+  end
+
+  class Web < Roda
+    IMAGE_EXTENSIONS: untyped
+
+    MAX_UPLOAD_BYTES: untyped
+
+    private
+
+    # : () -> App
+    def app: () -> untyped
+
+    # : () -> Sequel::Database
+    def db: () -> untyped
+
+    # Persists an uploaded image, raising ClientError when the upload is
+    # rejected so the error_handler plugin can render the right status.
+    # : (Hash[String, untyped]) -> void
+    def save_file: (untyped params) -> untyped
+  end
+end
