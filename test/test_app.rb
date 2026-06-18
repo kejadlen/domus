@@ -99,6 +99,40 @@ class TestApp < Minitest::Test
     assert_equal 404, last_response.status
   end
 
+  def test_asset_detail_renders_attached_images
+    now = Time.now
+    asset_id = domus.db[:assets].insert(name: "Dishwasher", created_at: now)
+    file_id = domus.db[:files].insert(extension: ".png", created_at: now)
+    domus.db[:asset_attachments].insert(asset_id:, file_id:, created_at: now)
+
+    get "/assets/#{asset_id}"
+    assert_equal 200, last_response.status
+    assert_includes last_response.body, %(src="/files/#{file_id}")
+  end
+
+  def test_asset_detail_without_images_omits_photos
+    id = domus.db[:assets].insert(name: "Bare", created_at: Time.now)
+
+    get "/assets/#{id}"
+    assert_equal 200, last_response.status
+    refute_includes last_response.body, 'class="photos"'
+  end
+
+  def test_get_file_serves_stored_image
+    post "/files", "file" => upload("photo.png", "image/png", "fake-png-bytes")
+    file_id = domus.db[:files].first[:id]
+
+    get "/files/#{file_id}"
+    assert_equal 200, last_response.status
+    assert_equal "image/png", last_response.headers["Content-Type"]
+    assert_equal "fake-png-bytes", last_response.body
+  end
+
+  def test_get_missing_file_is_404
+    get "/files/999999"
+    assert_equal 404, last_response.status
+  end
+
   def test_upload_image_saves_file_and_redirects
     post "/files", "file" => upload("photo.png", "image/png", "fake-png-bytes")
 

@@ -2,6 +2,7 @@
 
 require "roda"
 require "fileutils"
+require "rack/mime"
 require_relative "views/layout"
 require_relative "views/home"
 require_relative "views/asset"
@@ -59,6 +60,21 @@ module Domus
           save_file(r.params)
           r.redirect "/"
         end
+
+        # GET /files/:id — stream a stored upload. .sole raises
+        # Sequel::NoMatchingRow (→ 404) for an unknown id.
+        r.is Integer do |id|
+          r.get do
+            file = db[:files].where(id:).sole
+            path = app.file_path(file)
+            raise ClientError.new("File not found.", status: 404) unless ::File.exist?(path)
+
+            response["Content-Type"] = Rack::Mime.mime_type(file[:extension], "application/octet-stream")
+            # Uploads are immutable once stored, so they cache indefinitely.
+            response["Cache-Control"] = "private, max-age=31536000, immutable"
+            ::File.binread(path)
+          end
+        end
       end
 
       r.on "assets" do
@@ -66,7 +82,8 @@ module Domus
           r.get do
             # .sole raises Sequel::NoMatchingRow when the id is unknown; the
             # error_handler above turns that into a 404.
-            Views::Asset.new(asset: db[:assets].where(id:).sole).call
+            asset = db[:assets].where(id:).sole
+            Views::Asset.new(asset:, images: asset_images(id)).call
           end
         end
       end
@@ -78,6 +95,16 @@ module Domus
     def app = opts.fetch(:app)
     # : () -> Sequel::Database
     def db = app.db
+
+    # Files attached to an asset, oldest first, as {id:, extension:} rows.
+    def asset_images(asset_id)
+      db[:asset_attachments]
+        .where(asset_id:)
+        .join(:files, id: :file_id)
+        .order(Sequel[:asset_attachments][:created_at], Sequel[:files][:id])
+        .select(Sequel[:files][:id], Sequel[:files][:extension])
+        .all
+    end
 
     # Persists an uploaded image, raising ClientError when the upload is
     # rejected so the error_handler plugin can render the right status.
