@@ -558,7 +558,6 @@ body {
   align-items: center;
   margin-bottom: var(--space-s);
 }
-.asset-actions { margin-left: auto; }
 
 .asset .crumbs { display: flex; align-items: center; gap: var(--space-2xs); }
 .asset .crumbs a {
@@ -575,34 +574,8 @@ body {
 .asset .crumbs a:hover { color: var(--w-accent-ink); }
 .asset .crumbs svg { width: 13px; height: 13px; }
 
-.asset .iconbtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px; height: 36px;
-  border: 1px solid var(--w-line-2);
-  border-radius: calc(var(--radius) - 5px);
-  background: var(--w-surface);
-  color: var(--w-ink);
-  cursor: pointer;
-  transition: background .14s ease;
-}
-.asset .iconbtn:hover { background: var(--w-fill); }
-.asset .iconbtn svg { width: 16px; height: 16px; }
-
-/* ---- title block: catalog eyebrow + name + tags ---- */
+/* ---- title block: name + tags ---- */
 .asset-head { margin-bottom: var(--space-s); }
-
-.asset-head .eyebrow {
-  margin: 0 0 var(--space-2xs);
-  font-family: var(--font-mono);
-  font-size: var(--step--2);
-  font-weight: 500;
-  line-height: 1;
-  text-transform: uppercase;
-  letter-spacing: 0.16em;
-  color: var(--w-ink-3);
-}
 
 .asset-head .title {
   margin: 0;

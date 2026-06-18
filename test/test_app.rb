@@ -69,7 +69,7 @@ class TestApp < Minitest::Test
     assert_equal 200, last_response.status
     body = last_response.body
     assert_includes body, "Bosch 800 dishwasher"
-    assert_includes body, "Asset"
+    assert_includes body, "Assets" # breadcrumb back to the index
   end
 
   def test_asset_detail_renders_description

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require "phlex"
 require_relative "layout"
 require_relative "icons"
@@ -49,15 +47,11 @@ module Domus
           div(class: "crumbs") do
             a(href: "/") { icon("chev-left"); plain "Assets" }
           end
-          div(class: "asset-actions") do
-            button(type: "button", class: "iconbtn", "aria-label": "Asset actions") { icon("dots") }
-          end
         end
       end
 
       def head
         header(class: "asset-head") do
-          p(class: "eyebrow") { plain "Asset" }
           h1(class: "title") { plain @asset[:name] }
           tags
         end
