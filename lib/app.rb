@@ -20,7 +20,9 @@ module Domus
 
     # : (Hash[Symbol, untyped]) -> Pathname
     def file_path(record)
-      config.storage_path / "files" / "#{record[:id]}#{record[:extension]}"
+      files_root / "#{record[:id]}#{record[:extension]}"
     end
+
+    def files_root = config.storage_path / "files"
   end
 end

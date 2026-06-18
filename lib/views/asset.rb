@@ -53,7 +53,7 @@ module Domus
           div(class: "photos") do
             @images.each do |file|
               div(class: "shot") do
-                img(src: "/files/#{file[:id]}", alt: "Photo of #{@asset[:name]}", loading: "lazy")
+                img(src: "/files/#{file[:id]}#{file[:extension]}", alt: "Photo of #{@asset[:name]}", loading: "lazy")
               end
             end
           end

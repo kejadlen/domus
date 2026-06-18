@@ -107,7 +107,7 @@ class TestApp < Minitest::Test
 
     get "/assets/#{asset_id}"
     assert_equal 200, last_response.status
-    assert_includes last_response.body, %(src="/files/#{file_id}")
+    assert_includes last_response.body, %(src="/files/#{file_id}.png")
   end
 
   def test_asset_detail_without_images_omits_photos
@@ -120,16 +120,16 @@ class TestApp < Minitest::Test
 
   def test_get_file_serves_stored_image
     post "/files", "file" => upload("photo.png", "image/png", "fake-png-bytes")
-    file_id = domus.db[:files].first[:id]
+    file = domus.db[:files].first
 
-    get "/files/#{file_id}"
+    get "/files/#{file[:id]}#{file[:extension]}"
     assert_equal 200, last_response.status
     assert_equal "image/png", last_response.headers["Content-Type"]
     assert_equal "fake-png-bytes", last_response.body
   end
 
   def test_get_missing_file_is_404
-    get "/files/999999"
+    get "/files/999999.png"
     assert_equal 404, last_response.status
   end
 

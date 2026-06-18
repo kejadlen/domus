@@ -2,7 +2,7 @@
 
 require "roda"
 require "fileutils"
-require "rack/mime"
+require "rack/files"
 require_relative "views/layout"
 require_relative "views/home"
 require_relative "views/asset"
@@ -61,20 +61,11 @@ module Domus
           r.redirect "/"
         end
 
-        # GET /files/:id — stream a stored upload. .sole raises
-        # Sequel::NoMatchingRow (→ 404) for an unknown id.
-        r.is Integer do |id|
-          r.get do
-            file = db[:files].where(id:).sole
-            path = app.file_path(file)
-            raise ClientError.new("File not found.", status: 404) unless ::File.exist?(path)
-
-            response["Content-Type"] = Rack::Mime.mime_type(file[:extension], "application/octet-stream")
-            # Uploads are immutable once stored, so they cache indefinitely.
-            response["Cache-Control"] = "private, max-age=31536000, immutable"
-            ::File.binread(path)
-          end
-        end
+        # GET /files/:filename — serve a stored upload straight off disk.
+        # Rack::Files handles content-type, range requests, conditional GETs
+        # and a 404 for unknown files; uploads are named {id}{ext} and are
+        # immutable once stored, so they cache indefinitely.
+        r.run Rack::Files.new(app.files_root, { "cache-control" => "private, max-age=31536000, immutable" })
       end
 
       r.on "assets" do
