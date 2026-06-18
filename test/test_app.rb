@@ -54,6 +54,43 @@ class TestApp < Minitest::Test
     refute_includes body, 'href="/capture"'
   end
 
+  def test_asset_detail_renders_title
+    id = domus.db[:assets].insert(name: "Bosch 800 dishwasher", created_at: Time.now)
+
+    get "/assets/#{id}"
+    assert_equal 200, last_response.status
+    body = last_response.body
+    assert_includes body, "Bosch 800 dishwasher"
+    assert_includes body, "Asset"
+  end
+
+  def test_asset_detail_renders_description
+    id = domus.db[:assets].insert(
+      name: "Bosch 800 dishwasher",
+      description: "Stainless interior, third rack.\n\nReplaces the GE that flooded.",
+      created_at: Time.now
+    )
+
+    get "/assets/#{id}"
+    assert_equal 200, last_response.status
+    body = last_response.body
+    assert_includes body, "Stainless interior, third rack."
+    assert_includes body, "Replaces the GE that flooded."
+  end
+
+  def test_asset_detail_omits_description_when_absent
+    id = domus.db[:assets].insert(name: "Untitled", created_at: Time.now)
+
+    get "/assets/#{id}"
+    assert_equal 200, last_response.status
+    refute_includes last_response.body, 'class="desc"'
+  end
+
+  def test_asset_detail_missing_is_404
+    get "/assets/999999"
+    assert_equal 404, last_response.status
+  end
+
   def test_upload_image_saves_file_and_redirects
     post "/files", "file" => upload("photo.png", "image/png", "fake-png-bytes")
 

@@ -4,6 +4,7 @@ require "roda"
 require "fileutils"
 require_relative "views/layout"
 require_relative "views/home"
+require_relative "views/asset"
 
 module Domus
   # Raised when a request can't be processed because of client input. The
@@ -51,6 +52,17 @@ module Domus
         r.post do
           save_file(r.params)
           r.redirect "/"
+        end
+      end
+
+      r.on "assets" do
+        r.is Integer do |id|
+          r.get do
+            asset = db[:assets].first(id:)
+            raise ClientError.new("Asset not found.", status: 404) unless asset
+
+            Views::Asset.new(asset:).call
+          end
         end
       end
     end

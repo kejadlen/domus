@@ -534,3 +534,41 @@ body {
   }
   .menu { left: 0; right: 0; min-width: 0; }
 }
+
+/* ════════════════════════════════════════════════════════════════════════
+   Asset detail — the catalog card for a single tracked thing
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* ---- title block: catalog eyebrow + name ---- */
+.asset-head {
+  margin-bottom: var(--space-l);
+}
+
+.asset-head .eyebrow {
+  margin: 0 0 var(--space-2xs);
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  font-weight: 500;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--w-ink-3);
+}
+
+.asset-head .title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: var(--step-3);
+  letter-spacing: -0.018em;
+  line-height: 1.04;
+}
+
+/* ---- free-text description ---- */
+.desc {
+  max-width: 54ch;
+  line-height: 1.62;
+  color: var(--w-ink);
+}
+.desc p { margin: 0; }
+.desc p + p { margin-top: var(--space-3xs); }
