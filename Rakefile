@@ -1,4 +1,3 @@
-
 require "minitest/test_task"
 require_relative "lib/app"
 require "sequel/extensions/migration"
