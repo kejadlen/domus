@@ -36,7 +36,7 @@ module Domus
       def topbar
         header(class: "topbar") do
           a(href: "/", class: "logo") do
-            span(class: "logo-mark")
+            span(class: "logo-mark") { icon("logo") }
             plain "domus"
           end
         end
