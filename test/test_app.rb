@@ -125,6 +125,7 @@ class TestApp < Minitest::Test
     get "/files/#{file[:id]}#{file[:extension]}"
     assert_equal 200, last_response.status
     assert_equal "image/png", last_response.headers["Content-Type"]
+    assert_includes last_response.headers["Cache-Control"].to_s, "immutable"
     assert_equal "fake-png-bytes", last_response.body
   end
 

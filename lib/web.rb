@@ -2,7 +2,6 @@
 
 require "roda"
 require "fileutils"
-require "rack/files"
 require_relative "views/layout"
 require_relative "views/home"
 require_relative "views/asset"
@@ -55,17 +54,14 @@ module Domus
       # credential a forged cross-site POST could ride on. If this app ever
       # adopts cookie-based sessions, load the Roda :route_csrf plugin and
       # verify the token here before accepting the upload.
+      # GET /files/:filename (the stored uploads) is served straight off disk
+      # by the :static middleware, wired to the app's storage dir at boot
+      # (see config.ru / the test setup). POST /files stays on the route.
       r.on "files" do
         r.post do
           save_file(r.params)
           r.redirect "/"
         end
-
-        # GET /files/:filename — serve a stored upload straight off disk.
-        # Rack::Files handles content-type, range requests, conditional GETs
-        # and a 404 for unknown files; uploads are named {id}{ext} and are
-        # immutable once stored, so they cache indefinitely.
-        r.run Rack::Files.new(app.files_root, { "cache-control" => "private, max-age=31536000, immutable" })
       end
 
       r.on "assets" do
