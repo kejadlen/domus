@@ -37,6 +37,14 @@ class TestApp < Minitest::Test
     assert_operator body.index("Newer asset"), :<, body.index("Older asset")
   end
 
+  def test_root_links_each_asset_to_its_detail_page
+    id = domus.db[:assets].insert(name: "Laptop", created_at: Time.now)
+
+    get "/"
+    assert_equal 200, last_response.status
+    assert_includes last_response.body, %(href="/assets/#{id}")
+  end
+
   def test_root_empty_state
     get "/"
     assert_equal 200, last_response.status
@@ -52,6 +60,81 @@ class TestApp < Minitest::Test
     assert_includes body, "capturePrimary()"
     assert_includes body, "captureAlternate()"
     refute_includes body, 'href="/capture"'
+  end
+
+  def test_asset_detail_renders_title
+    id = domus.db[:assets].insert(name: "Bosch 800 dishwasher", created_at: Time.now)
+
+    get "/assets/#{id}"
+    assert_equal 200, last_response.status
+    body = last_response.body
+    assert_includes body, "Bosch 800 dishwasher"
+    assert_includes body, "Assets" # breadcrumb back to the index
+  end
+
+  def test_asset_detail_renders_description
+    id = domus.db[:assets].insert(
+      name: "Bosch 800 dishwasher",
+      description: "Stainless interior, third rack.\n\nReplaces the GE that flooded.",
+      created_at: Time.now
+    )
+
+    get "/assets/#{id}"
+    assert_equal 200, last_response.status
+    body = last_response.body
+    assert_includes body, "Stainless interior, third rack."
+    assert_includes body, "Replaces the GE that flooded."
+  end
+
+  def test_asset_detail_omits_description_when_absent
+    id = domus.db[:assets].insert(name: "Untitled", created_at: Time.now)
+
+    get "/assets/#{id}"
+    assert_equal 200, last_response.status
+    refute_includes last_response.body, 'class="desc"'
+  end
+
+  def test_asset_detail_missing_is_404
+    get "/assets/999999"
+    assert_equal 404, last_response.status
+  end
+
+  def test_asset_detail_renders_attached_images
+    now = Time.now
+    asset_id = domus.db[:assets].insert(name: "Dishwasher", created_at: now)
+    file_id = domus.db[:files].insert(extension: ".png", created_at: now)
+    domus.db[:asset_attachments].insert(asset_id:, file_id:, created_at: now)
+
+    get "/assets/#{asset_id}"
+    assert_equal 200, last_response.status
+    assert_includes last_response.body, %(src="/files/#{file_id}.png")
+  end
+
+  def test_asset_detail_without_images_shows_photos_add_affordance
+    id = domus.db[:assets].insert(name: "Bare", created_at: Time.now)
+
+    get "/assets/#{id}"
+    assert_equal 200, last_response.status
+    # The photos section always renders (with the add affordance); there
+    # just aren't any <img> tiles when nothing is attached.
+    assert_includes last_response.body, "addphoto"
+    refute_includes last_response.body, "<img"
+  end
+
+  def test_get_file_serves_stored_image
+    post "/files", "file" => upload("photo.png", "image/png", "fake-png-bytes")
+    file = domus.db[:files].first
+
+    get "/files/#{file[:id]}#{file[:extension]}"
+    assert_equal 200, last_response.status
+    assert_equal "image/png", last_response.headers["Content-Type"]
+    assert_includes last_response.headers["Cache-Control"].to_s, "immutable"
+    assert_equal "fake-png-bytes", last_response.body
+  end
+
+  def test_get_missing_file_is_404
+    get "/files/999999.png"
+    assert_equal 404, last_response.status
   end
 
   def test_upload_image_saves_file_and_redirects

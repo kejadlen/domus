@@ -4,6 +4,7 @@ require "roda"
 require "fileutils"
 require_relative "views/layout"
 require_relative "views/home"
+require_relative "views/asset"
 
 module Domus
   # Raised when a request can't be processed because of client input. The
@@ -22,10 +23,16 @@ module Domus
     plugin :public
     plugin :all_verbs
     plugin :error_handler do |e|
-      raise e unless e.is_a?(ClientError)
-
-      response.status = e.status
-      e.message
+      case e
+      when ClientError
+        response.status = e.status
+        e.message
+      when Sequel::NoMatchingRow
+        response.status = 404
+        "Not found."
+      else
+        raise e
+      end
     end
 
     IMAGE_EXTENSIONS = %w[.jpg .jpeg .png .gif .webp .heic .heif].freeze
@@ -47,10 +54,24 @@ module Domus
       # credential a forged cross-site POST could ride on. If this app ever
       # adopts cookie-based sessions, load the Roda :route_csrf plugin and
       # verify the token here before accepting the upload.
+      # GET /files/:filename (the stored uploads) is served straight off disk
+      # by the :static middleware, wired to the app's storage dir at boot
+      # (see config.ru / the test setup). POST /files stays on the route.
       r.on "files" do
         r.post do
           save_file(r.params)
           r.redirect "/"
+        end
+      end
+
+      r.on "assets" do
+        r.is Integer do |id|
+          r.get do
+            # .sole raises Sequel::NoMatchingRow when the id is unknown; the
+            # error_handler above turns that into a 404.
+            asset = db[:assets].where(id:).sole
+            Views::Asset.new(asset:, images: asset_images(id)).call
+          end
         end
       end
     end
@@ -61,6 +82,16 @@ module Domus
     def app = opts.fetch(:app)
     # : () -> Sequel::Database
     def db = app.db
+
+    # Files attached to an asset, oldest first, as {id:, extension:} rows.
+    def asset_images(asset_id)
+      db[:asset_attachments]
+        .where(asset_id:)
+        .join(:files, id: :file_id)
+        .order(Sequel[:asset_attachments][:created_at], Sequel[:files][:id])
+        .select(Sequel[:files][:id], Sequel[:files][:extension])
+        .all
+    end
 
     # Persists an uploaded image, raising ClientError when the upload is
     # rejected so the error_handler plugin can render the right status.

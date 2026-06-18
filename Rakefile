@@ -1,5 +1,11 @@
+# Put lib/ on the load path so plain requires and Sequel's extension loader
+# (db.extension(:sole) -> require "sequel/extensions/sole") resolve. The test
+# task adds lib/ for the spawned test run, but this Rakefile also builds an App
+# at load time for the db: tasks, which runs in the bare rake process.
+$LOAD_PATH.unshift(File.expand_path("lib", __dir__))
+
 require "minitest/test_task"
-require_relative "lib/app"
+require "app"
 require "sequel/extensions/migration"
 
 DOMUS_APP = Domus::App.new
