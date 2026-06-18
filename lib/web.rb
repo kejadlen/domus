@@ -23,10 +23,16 @@ module Domus
     plugin :public
     plugin :all_verbs
     plugin :error_handler do |e|
-      raise e unless e.is_a?(ClientError)
-
-      response.status = e.status
-      e.message
+      case e
+      when ClientError
+        response.status = e.status
+        e.message
+      when Sequel::NoMatchingRow
+        response.status = 404
+        "Not found."
+      else
+        raise e
+      end
     end
 
     IMAGE_EXTENSIONS = %w[.jpg .jpeg .png .gif .webp .heic .heif].freeze
@@ -58,10 +64,9 @@ module Domus
       r.on "assets" do
         r.is Integer do |id|
           r.get do
-            asset = db[:assets].first(id:)
-            raise ClientError.new("Asset not found.", status: 404) unless asset
-
-            Views::Asset.new(asset:).call
+            # .sole raises Sequel::NoMatchingRow when the id is unknown; the
+            # error_handler above turns that into a 404.
+            Views::Asset.new(asset: db[:assets].where(id:).sole).call
           end
         end
       end
