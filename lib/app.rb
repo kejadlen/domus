@@ -3,10 +3,6 @@
 require "sequel"
 require_relative "config"
 
-# Put lib/ on the load path so Sequel can find our dataset extensions by name
-# (e.g. db.extension(:sole) requires "sequel/extensions/sole").
-$LOAD_PATH.unshift(__dir__) unless $LOAD_PATH.include?(__dir__)
-
 module Domus
   class App
     attr_reader :config, :db
