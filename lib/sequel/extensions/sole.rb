@@ -12,9 +12,9 @@ module Sequel
   #   db[:assets].where(id: 0).sole  # raises Sequel::NoMatchingRow
   #   db[:assets].sole               # raises Sequel::Sole::TooManyRows (if > 1)
   #
-  # Apply it to every dataset of a database with:
+  # Load it onto every dataset of a database with:
   #
-  #   db.extend_datasets(Sequel::Sole::DatasetMethods)
+  #   db.extension(:sole)
   module Sole
     class TooManyRows < Sequel::Error; end
 
