@@ -108,7 +108,7 @@ module Domus
       def archive
         div(class: "archive") do
           @assets.each do |asset|
-            div(class: "entry") do
+            a(class: "entry", href: "/assets/#{asset[:id]}") do
               span(class: "chip") { icon("box") }
               div(class: "body") do
                 div(class: "nm") { plain asset[:name] }

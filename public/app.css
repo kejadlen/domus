@@ -441,6 +441,8 @@ body {
   border-top: 1px solid var(--w-line);
   cursor: pointer;
   transition: background .12s ease;
+  color: inherit;
+  text-decoration: none;
 }
 .entry:first-child { border-top: 0; }
 .entry:hover { background: var(--w-fill); }

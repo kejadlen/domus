@@ -37,6 +37,14 @@ class TestApp < Minitest::Test
     assert_operator body.index("Newer asset"), :<, body.index("Older asset")
   end
 
+  def test_root_links_each_asset_to_its_detail_page
+    id = domus.db[:assets].insert(name: "Laptop", created_at: Time.now)
+
+    get "/"
+    assert_equal 200, last_response.status
+    assert_includes last_response.body, %(href="/assets/#{id}")
+  end
+
   def test_root_empty_state
     get "/"
     assert_equal 200, last_response.status
