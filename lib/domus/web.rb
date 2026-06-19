@@ -22,7 +22,6 @@ module Domus
   class Web < Roda
     plugin :public
     plugin :all_verbs
-    plugin :send_file
     plugin :error_handler do |e|
       case e
       when ClientError
@@ -56,10 +55,6 @@ module Domus
       # adopts cookie-based sessions, load the Roda :route_csrf plugin and
       # verify the token here before accepting the upload.
       r.on "files" do
-        r.get String do |filename|
-          response["Cache-Control"] = "private, max-age=31536000, immutable"
-          send_file((app.files_root / filename).to_s)
-        end
         r.post do
           save_file(r.params)
           r.redirect "/"
@@ -76,6 +71,15 @@ module Domus
           end
         end
       end
+    end
+
+    # Call once after opts[:app] is injected to wire up static file serving
+    # for stored uploads at /files/. Kept here so all routing config lives
+    # in one place; config.ru and tests call it as a one-liner trigger.
+    def self.configure_static!
+      plugin :static, ["/files/"],
+        root: opts.fetch(:app).config.storage_path.to_s,
+        cache_control: "private, max-age=31536000, immutable"
     end
 
     private
