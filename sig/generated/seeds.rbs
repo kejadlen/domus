@@ -9,18 +9,54 @@ module Domus
   module Seeds
     USER_AGENT: ::String
 
-    # CC0 cat photos keyed by a short name. CC0 needs no attribution, but the
-    # Wikimedia Commons file pages document the license and provenance:
+    # A seed photo. +key+ names the cache file; +url+ is the source download.
+    class Photo < Data
+      attr_reader key(): Symbol
+
+      attr_reader url(): String
+
+      def self.new: (Symbol key, String url) -> instance
+                  | (key: Symbol, url: String) -> instance
+
+      def self.members: () -> [ :key, :url ]
+
+      def members: () -> [ :key, :url ]
+    end
+
+    # An asset to seed, with zero or more attached photos.
+    class Asset < Data
+      attr_reader name(): String
+
+      attr_reader description(): String
+
+      attr_reader photos(): Array[Photo]
+
+      def self.new: (String name, String description, Array[Photo] photos) -> instance
+                  | (name: String, description: String, photos: Array[Photo]) -> instance
+
+      def self.members: () -> [ :name, :description, :photos ]
+
+      def members: () -> [ :name, :description, :photos ]
+    end
+
+    # CC0 cat photos. CC0 needs no attribution, but the Wikimedia Commons file
+    # pages document the license and provenance:
     #   https://creativecommons.org/publicdomain/zero/1.0/
-    #   grass:  commons.wikimedia.org/wiki/File:Domestic_shorthair_cat_portrait_in_grass.jpg
-    #   tabby:  commons.wikimedia.org/wiki/File:Tabby_cat_with_blue_eyes-3336579.jpg
-    #   paw:    commons.wikimedia.org/wiki/File:Domestic_cat_paw.jpg
-    #   kitten: commons.wikimedia.org/wiki/File:A_mother_cat_of_Meitei_domestic_cat_breed_(Meitei_house_cat_variety)_suckling_her_only_little_newborn_baby_kitten_05.jpg
-    PHOTOS: Hash[Symbol, String]
+    #   commons.wikimedia.org/wiki/File:Domestic_shorthair_cat_portrait_in_grass.jpg
+    #   commons.wikimedia.org/wiki/File:Tabby_cat_with_blue_eyes-3336579.jpg
+    #   commons.wikimedia.org/wiki/File:Domestic_cat_paw.jpg
+    #   commons.wikimedia.org/wiki/File:A_mother_cat_of_Meitei_domestic_cat_breed_(Meitei_house_cat_variety)_suckling_her_only_little_newborn_baby_kitten_05.jpg
+    GRASS: untyped
+
+    TABBY: untyped
+
+    PAW: untyped
+
+    KITTEN: untyped
 
     # Sample household assets. The drill is intentionally photoless so the
     # asset page's add-photo affordance shows up in dev.
-    ASSETS: Array[Hash[Symbol, untyped]]
+    ASSETS: Array[Asset]
 
     # Seeds the database when it's empty, returning true when it inserted data
     # and false when assets already exist. The empty check keeps repeated dev
@@ -30,8 +66,8 @@ module Domus
     def self.call: (untyped app) -> untyped
 
     # Returns the cached path to a seed photo, downloading it on first use.
-    # : (Symbol) -> Pathname
-    def self.fetch: (untyped key) -> untyped
+    # : (Photo) -> Pathname
+    def self.fetch: (untyped photo) -> untyped
 
     # The XDG cache directory for downloaded seed photos.
     # : () -> Pathname
