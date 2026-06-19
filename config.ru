@@ -2,8 +2,8 @@
 # (db.extension(:sole) -> require "sequel/extensions/sole") resolve.
 $LOAD_PATH.unshift(File.expand_path("lib", __dir__))
 
-require "app"
-require "web"
+require "domus/app"
+require "domus/web"
 require "sequel/extensions/migration"
 
 app = Domus::App.new

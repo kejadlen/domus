@@ -1,5 +1,5 @@
 require_relative "test_helper"
-require_relative "../lib/relative_time"
+require "domus/relative_time"
 
 class TestRelativeTime < Minitest::Test
   def fmt(seconds_ago)

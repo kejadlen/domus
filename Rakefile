@@ -5,7 +5,7 @@
 $LOAD_PATH.unshift(File.expand_path("lib", __dir__))
 
 require "minitest/test_task"
-require "app"
+require "domus/app"
 require "sequel/extensions/migration"
 
 DOMUS_APP = Domus::App.new

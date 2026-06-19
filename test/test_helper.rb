@@ -4,9 +4,9 @@ require "sequel/extensions/migration"
 require "fileutils"
 require "pathname"
 
-require_relative "../lib/app"
-require_relative "../lib/web"
-require_relative "../lib/seeds"
+require "domus/app"
+require "domus/web"
+require "domus/seeds"
 
 storage = Dir.mktmpdir("domus-test")
 at_exit { FileUtils.rm_rf(storage) }
