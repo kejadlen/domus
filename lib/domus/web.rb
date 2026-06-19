@@ -22,6 +22,7 @@ module Domus
   class Web < Roda
     plugin :public
     plugin :all_verbs
+    plugin :send_file
     plugin :error_handler do |e|
       case e
       when ClientError
@@ -54,10 +55,11 @@ module Domus
       # credential a forged cross-site POST could ride on. If this app ever
       # adopts cookie-based sessions, load the Roda :route_csrf plugin and
       # verify the token here before accepting the upload.
-      # GET /files/:filename (the stored uploads) is served straight off disk
-      # by the :static middleware, wired to the app's storage dir at boot
-      # (see config.ru / the test setup). POST /files stays on the route.
       r.on "files" do
+        r.get String do |filename|
+          response["Cache-Control"] = "private, max-age=31536000, immutable"
+          send_file((app.files_root / filename).to_s)
+        end
         r.post do
           save_file(r.params)
           r.redirect "/"
