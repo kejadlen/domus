@@ -2,6 +2,7 @@
 
 require "roda"
 require "fileutils"
+require_relative "app"
 require_relative "views/layout"
 require_relative "views/home"
 require_relative "views/asset"
@@ -73,17 +74,18 @@ module Domus
       end
     end
 
-    def self.app=(app)
-      opts[:app] = app
-      plugin :static, ["/files/"],
-        root: app.config.storage_path.to_s,
-        cache_control: "private, max-age=31536000, immutable"
+    def self.app
+      opts[:app] ||= App.new.tap do |a|
+        plugin :static, ["/files/"],
+          root: a.config.storage_path.to_s,
+          cache_control: "private, max-age=31536000, immutable"
+      end
     end
 
     private
 
     # : () -> App
-    def app = opts.fetch(:app)
+    def app = self.class.app
     # : () -> Sequel::Database
     def db = app.db
 
