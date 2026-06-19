@@ -13,11 +13,25 @@ module Domus
   module Seeds
     USER_AGENT = "domus-seed/1.0 (https://github.com/kejadlen/domus)"
 
-    # A seed photo. +key+ names the cache file; +url+ is the source download.
+    # A seed photo that knows how to fetch and cache itself. +key+ names the
+    # cache file; +url+ is the source download.
     Photo = Data.define(
       :key, #: Symbol
       :url, #: String
-    )
+    ) do
+      # Downloads the photo into the cache on first use, returning its path.
+      # : () -> Pathname
+      def fetch
+        return cache_path if cache_path.exist?
+
+        cache_path.dirname.mkpath
+        cache_path.binwrite(URI.parse(url).open("User-Agent" => USER_AGENT, &:read))
+        cache_path
+      end
+
+      # : () -> Pathname
+      def cache_path = Seeds.cache_dir / "#{key}.jpg"
+    end
 
     # An asset to seed, with zero or more attached photos.
     Asset = Data.define(
@@ -65,15 +79,15 @@ module Domus
 
     # Seeds the database when it's empty, returning true when it inserted data
     # and false when assets already exist. The empty check keeps repeated dev
-    # runs and CI idempotent. Photos download (and cache) outside the
-    # transaction so a slow network doesn't hold the write lock open.
+    # runs and CI idempotent.
     # : (App) -> bool
     def self.call(app)
       db = app.db
       return false unless db[:assets].empty?
 
-      photos = ASSETS.flat_map(&:photos).uniq #: Array[Photo]
-      sources = photos.to_h { |photo| [photo, fetch(photo)] } #: Hash[Photo, Pathname]
+      # Warm the cache outside the transaction so a slow download doesn't hold
+      # the write lock open.
+      ASSETS.flat_map(&:photos).uniq.each(&:fetch)
 
       db.transaction do
         now = Time.now
@@ -83,24 +97,12 @@ module Domus
             file_id = db[:files].insert(extension: ".jpg", created_at: now)
             dest = app.file_path(id: file_id, extension: ".jpg")
             FileUtils.mkdir_p(dest.dirname)
-            FileUtils.cp(sources.fetch(photo), dest)
+            FileUtils.cp(photo.cache_path, dest)
             db[:asset_attachments].insert(asset_id:, file_id:, created_at: now)
           end
         end
       end
       true
-    end
-
-    # Returns the cached path to a seed photo, downloading it on first use.
-    # : (Photo) -> Pathname
-    def self.fetch(photo)
-      path = cache_dir / "#{photo.key}.jpg"
-      return path if path.exist?
-
-      cache_dir.mkpath
-      data = URI.parse(photo.url).open("User-Agent" => USER_AGENT, &:read) #: String
-      path.binwrite(data)
-      path
     end
 
     # The XDG cache directory for downloaded seed photos.

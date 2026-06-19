@@ -9,7 +9,8 @@ module Domus
   module Seeds
     USER_AGENT: ::String
 
-    # A seed photo. +key+ names the cache file; +url+ is the source download.
+    # A seed photo that knows how to fetch and cache itself. +key+ names the
+    # cache file; +url+ is the source download.
     class Photo < Data
       attr_reader key(): Symbol
 
@@ -60,14 +61,9 @@ module Domus
 
     # Seeds the database when it's empty, returning true when it inserted data
     # and false when assets already exist. The empty check keeps repeated dev
-    # runs and CI idempotent. Photos download (and cache) outside the
-    # transaction so a slow network doesn't hold the write lock open.
+    # runs and CI idempotent.
     # : (App) -> bool
     def self.call: (untyped app) -> untyped
-
-    # Returns the cached path to a seed photo, downloading it on first use.
-    # : (Photo) -> Pathname
-    def self.fetch: (untyped photo) -> untyped
 
     # The XDG cache directory for downloaded seed photos.
     # : () -> Pathname
