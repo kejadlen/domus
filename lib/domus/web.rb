@@ -2,6 +2,7 @@
 
 require "roda"
 require "fileutils"
+require_relative "config"
 require_relative "views/layout"
 require_relative "views/home"
 require_relative "views/asset"
@@ -21,6 +22,15 @@ module Domus
 
   class Web < Roda
     plugin :public
+
+    # Serve stored uploads (storage/files/{id}{ext}) at /files/ straight off
+    # disk. The :static plugin needs a concrete root at load time, so it reads
+    # the shared Domus.config (the same instance App uses). Uploads are
+    # immutable once stored, so they cache indefinitely.
+    plugin :static, ["/files/"],
+      root: Domus.config.storage_path.to_s,
+      cache_control: "private, max-age=31536000, immutable"
+
     plugin :all_verbs
     plugin :error_handler do |e|
       case e
@@ -55,8 +65,8 @@ module Domus
       # adopts cookie-based sessions, load the Roda :route_csrf plugin and
       # verify the token here before accepting the upload.
       # GET /files/:filename (the stored uploads) is served straight off disk
-      # by the :static middleware, wired to the app's storage dir at boot
-      # (see config.ru / the test setup). POST /files stays on the route.
+      # by the :static middleware configured above. POST /files stays on the
+      # route.
       r.on "files" do
         r.post do
           save_file(r.params)

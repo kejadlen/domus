@@ -8,7 +8,7 @@ module Domus
     attr_reader :config, :db
 
     # : (Config) -> void
-    def initialize(config = Config.env)
+    def initialize(config = Domus.config)
       @config = config
       @db = Sequel.sqlite(config.database_url)
       @db.extension(:sole)

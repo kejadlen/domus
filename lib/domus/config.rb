@@ -15,4 +15,15 @@ module Domus
       storage_path: Pathname(ENV.fetch("STORAGE_PATH") { "storage" }),
     )
   end
+
+  class << self
+    # The process-wide config, resolved from the environment the first time
+    # it's read. Loaded code reads this single instance: Web's :static plugin
+    # needs the storage path at load, and App stores files there. Tests assign
+    # a Config here before requiring the app to point it at a temp dir.
+    attr_writer :config
+
+    #: () -> Config
+    def config = @config ||= Config.env
+  end
 end
