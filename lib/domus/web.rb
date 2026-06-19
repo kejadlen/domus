@@ -73,12 +73,10 @@ module Domus
       end
     end
 
-    # Call once after opts[:app] is injected to wire up static file serving
-    # for stored uploads at /files/. Kept here so all routing config lives
-    # in one place; config.ru and tests call it as a one-liner trigger.
-    def self.configure_static!
+    def self.app=(app)
+      opts[:app] = app
       plugin :static, ["/files/"],
-        root: opts.fetch(:app).config.storage_path.to_s,
+        root: app.config.storage_path.to_s,
         cache_control: "private, max-age=31536000, immutable"
     end
 

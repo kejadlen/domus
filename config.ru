@@ -8,7 +8,6 @@ require "sequel/extensions/migration"
 
 app = Domus::App.new
 Sequel::Migrator.run(app.db, "db/migrate") unless Dir.empty?("db/migrate")
-Domus::Web.opts[:app] = app
-Domus::Web.configure_static!
+Domus::Web.app = app
 
 run Domus::Web
