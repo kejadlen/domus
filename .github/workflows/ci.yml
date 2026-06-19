@@ -27,7 +27,7 @@ jobs:
 
       - run: bundle exec rake test
 
-      - run: bundle exec steep check
+      - run: bundle exec rake check
 
   build:
     name: Build
