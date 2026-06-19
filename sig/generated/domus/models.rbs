@@ -1,4 +1,4 @@
-# Generated from lib/models.rb with RBS::Inline
+# Generated from lib/domus/models.rb with RBS::Inline
 
 module Domus
   class Document < Sequel::Model

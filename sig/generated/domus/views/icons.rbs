@@ -1,4 +1,4 @@
-# Generated from lib/views/icons.rb with RBS::Inline
+# Generated from lib/domus/views/icons.rb with RBS::Inline
 
 module Domus
   module Views

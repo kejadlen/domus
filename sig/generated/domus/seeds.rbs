@@ -1,4 +1,4 @@
-# Generated from lib/seeds.rb with RBS::Inline
+# Generated from lib/domus/seeds.rb with RBS::Inline
 
 module Domus
   # Development and test seed data. Populates a few sample assets so a fresh

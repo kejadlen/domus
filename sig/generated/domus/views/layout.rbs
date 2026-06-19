@@ -1,4 +1,4 @@
-# Generated from lib/views/layout.rb with RBS::Inline
+# Generated from lib/domus/views/layout.rb with RBS::Inline
 
 module Domus
   module Views

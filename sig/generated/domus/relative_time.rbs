@@ -1,4 +1,4 @@
-# Generated from lib/relative_time.rb with RBS::Inline
+# Generated from lib/domus/relative_time.rb with RBS::Inline
 
 module Domus
   # Formats a timestamp as a compact, archival relative age —

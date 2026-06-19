@@ -1,4 +1,4 @@
-# Generated from lib/views/capture_form.rb with RBS::Inline
+# Generated from lib/domus/views/capture_form.rb with RBS::Inline
 
 module Domus
   module Views

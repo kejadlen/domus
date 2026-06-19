@@ -1,4 +1,4 @@
-# Generated from lib/web.rb with RBS::Inline
+# Generated from lib/domus/web.rb with RBS::Inline
 
 module Domus
   # Raised when a request can't be processed because of client input. The

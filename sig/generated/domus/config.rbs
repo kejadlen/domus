@@ -1,4 +1,4 @@
-# Generated from lib/config.rb with RBS::Inline
+# Generated from lib/domus/config.rb with RBS::Inline
 
 module Domus
   class Config < Data
