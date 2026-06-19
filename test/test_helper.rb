@@ -13,4 +13,4 @@ require "domus/web"
 require "domus/seeds"
 
 migrate_dir = File.expand_path("../db/migrate", __dir__)
-Sequel::Migrator.run(Domus::Web.opts[:app].db, migrate_dir) unless Dir.empty?(migrate_dir)
+Sequel::Migrator.run(Domus::Web::APP.db, migrate_dir) unless Dir.empty?(migrate_dir)

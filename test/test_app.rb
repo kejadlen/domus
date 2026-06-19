@@ -9,7 +9,7 @@ class TestApp < Minitest::Test
     Domus::Web
   end
 
-  def domus = Domus::Web.opts[:app]
+  def domus = Domus::Web::APP
 
   # Every test starts from the shared seed baseline, so dev and the suite
   # exercise the same Domus::Seeds path. Tests that need a clean slate call
