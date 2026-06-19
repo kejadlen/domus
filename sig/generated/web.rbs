@@ -23,6 +23,9 @@ module Domus
     # : () -> Sequel::Database
     def db: () -> untyped
 
+    # Files attached to an asset, oldest first, as {id:, extension:} rows.
+    def asset_images: (untyped asset_id) -> untyped
+
     # Persists an uploaded image, raising ClientError when the upload is
     # rejected so the error_handler plugin can render the right status.
     # : (Hash[String, untyped]) -> void

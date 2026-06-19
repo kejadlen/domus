@@ -13,6 +13,6 @@ module Domus
     def file_path: (untyped record) -> untyped
 
     # : () -> Pathname
-    def files_root: () -> Pathname
+    def files_root: () -> untyped
   end
 end
