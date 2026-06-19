@@ -1,7 +1,7 @@
 require_relative "test_helper"
 
 class TestSole < Minitest::Test
-  def db = Domus::Web.app.db
+  def db = Domus::Web.opts[:app].db
 
   def setup
     db[:asset_attachments].delete

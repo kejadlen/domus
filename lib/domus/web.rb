@@ -21,6 +21,11 @@ module Domus
   end
 
   class Web < Roda
+    opts[:app] = App.new
+    plugin :static, ["/files/"],
+      root: opts[:app].config.storage_path.to_s,
+      cache_control: "private, max-age=31536000, immutable"
+
     plugin :public
     plugin :all_verbs
     plugin :error_handler do |e|
@@ -74,18 +79,10 @@ module Domus
       end
     end
 
-    def self.app
-      opts[:app] ||= App.new.tap do |a|
-        plugin :static, ["/files/"],
-          root: a.config.storage_path.to_s,
-          cache_control: "private, max-age=31536000, immutable"
-      end
-    end
-
     private
 
     # : () -> App
-    def app = self.class.app
+    def app = opts[:app]
     # : () -> Sequel::Database
     def db = app.db
 
