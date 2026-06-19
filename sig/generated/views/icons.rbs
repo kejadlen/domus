@@ -12,9 +12,6 @@ module Domus
 
       # : (String name) -> void
       def icon: (untyped name) -> untyped
-
-      def raw: (String) -> void
-      def safe: (String) -> String
     end
   end
 end

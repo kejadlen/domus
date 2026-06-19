@@ -33,6 +33,15 @@ class Roda
   def opts: () -> Hash[Symbol, untyped]
 end
 
+module Domus
+  module Views
+    module Icons
+      def raw: (String) -> void
+      def safe: (String) -> String
+    end
+  end
+end
+
 module Phlex
   class HTML
     def self.new: (**untyped) -> instance
