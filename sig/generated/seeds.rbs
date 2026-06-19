@@ -1,0 +1,40 @@
+# Generated from lib/seeds.rb with RBS::Inline
+
+module Domus
+  # Development and test seed data. Populates a few sample assets so a fresh
+  # checkout has something to look at, using real CC0 (public domain) cat
+  # photos from Wikimedia Commons. Photos download once into an XDG cache and
+  # are reused across runs, so dev and the test suite share both the seeder
+  # and the cached images.
+  module Seeds
+    USER_AGENT: ::String
+
+    # CC0 cat photos keyed by a short name. CC0 needs no attribution, but the
+    # Wikimedia Commons file pages document the license and provenance:
+    #   https://creativecommons.org/publicdomain/zero/1.0/
+    #   grass:  commons.wikimedia.org/wiki/File:Domestic_shorthair_cat_portrait_in_grass.jpg
+    #   tabby:  commons.wikimedia.org/wiki/File:Tabby_cat_with_blue_eyes-3336579.jpg
+    #   paw:    commons.wikimedia.org/wiki/File:Domestic_cat_paw.jpg
+    #   kitten: commons.wikimedia.org/wiki/File:A_mother_cat_of_Meitei_domestic_cat_breed_(Meitei_house_cat_variety)_suckling_her_only_little_newborn_baby_kitten_05.jpg
+    PHOTOS: Hash[Symbol, String]
+
+    # Sample household assets. The drill is intentionally photoless so the
+    # asset page's add-photo affordance shows up in dev.
+    ASSETS: Array[Hash[Symbol, untyped]]
+
+    # Seeds the database when it's empty, returning true when it inserted data
+    # and false when assets already exist. The empty check keeps repeated dev
+    # runs and CI idempotent. Photos download (and cache) outside the
+    # transaction so a slow network doesn't hold the write lock open.
+    # : (App) -> bool
+    def self.call: (untyped app) -> untyped
+
+    # Returns the cached path to a seed photo, downloading it on first use.
+    # : (Symbol) -> Pathname
+    def self.fetch: (untyped key) -> untyped
+
+    # The XDG cache directory for downloaded seed photos.
+    # : () -> Pathname
+    def self.cache_dir: () -> untyped
+  end
+end

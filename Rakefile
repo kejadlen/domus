@@ -29,10 +29,12 @@ end
 
 task default: %i[test check]
 
-desc "Start dev server"
-task :dev do
-  require "rack"
-  Rack::Server.start(config: "config.ru", Port: 9292)
+desc "Start dev server with live reload (needs fd + entr)"
+task dev: %w[db:migrate db:seed] do
+  # Watch the Ruby/template/asset sources and restart rackup on change. fd is
+  # scoped to lib/ and public/ (plus config.ru) so downloaded seed images and
+  # vendored gems don't trip the reloader.
+  sh "{ fd -e rb -e ru -e css -e svg . lib public; echo config.ru; } | entr -r bundle exec rackup -p 9292"
 end
 
 namespace :db do
@@ -59,6 +61,7 @@ namespace :db do
 
   desc "Seed the database with development data"
   task :seed do
-    # Add seed data here
+    require "seeds"
+    puts Domus::Seeds.call(DOMUS_APP) ? "Seeded." : "Already seeded."
   end
 end

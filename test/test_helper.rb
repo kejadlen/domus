@@ -6,6 +6,7 @@ require "pathname"
 
 require_relative "../lib/app"
 require_relative "../lib/web"
+require_relative "../lib/seeds"
 
 storage = Dir.mktmpdir("domus-test")
 at_exit { FileUtils.rm_rf(storage) }

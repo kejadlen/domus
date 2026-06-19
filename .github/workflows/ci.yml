@@ -25,6 +25,16 @@ jobs:
         with:
           bundler-cache: true
 
+      # Seed photos download from Wikimedia Commons on first use; cache them so
+      # the suite only hits the network when the photo set in lib/seeds.rb
+      # changes. Keyed without restore-keys on purpose: cache files are named by
+      # photo key, so a changed URL must miss and re-download rather than reuse
+      # a stale image.
+      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: ~/.cache/domus/seeds
+          key: domus-seeds-${{ hashFiles('lib/seeds.rb') }}
+
       - run: bundle exec rake test
 
       - run: bundle exec rake check
