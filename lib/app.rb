@@ -19,6 +19,7 @@ module Domus
       files_root / "#{record[:id]}#{record[:extension]}"
     end
 
+    # : () -> Pathname
     def files_root = config.storage_path / "files"
   end
 end

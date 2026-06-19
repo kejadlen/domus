@@ -11,5 +11,8 @@ module Domus
 
     # : (Hash[Symbol, untyped]) -> Pathname
     def file_path: (untyped record) -> untyped
+
+    # : () -> Pathname
+    def files_root: () -> Pathname
   end
 end
