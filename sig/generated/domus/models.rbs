@@ -1,6 +1,16 @@
 # Generated from lib/domus/models.rb with RBS::Inline
 
 module Domus
+  class Asset < Sequel::Model
+    def validate: () -> untyped
+  end
+
+  class Upload
+    IMAGE_EXTENSIONS: untyped
+
+    def validate: () -> untyped
+  end
+
   class Document < Sequel::Model
   end
 end

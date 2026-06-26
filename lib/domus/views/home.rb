@@ -15,7 +15,7 @@ module Domus
     class Home < Phlex::HTML
       include Icons
 
-      # : (assets: Array[Hash[Symbol, untyped]], total: Integer) -> void
+      # : (assets: Array[Asset], total: Integer) -> void
       def initialize(assets:, total:)
         @assets = assets
         @total = total

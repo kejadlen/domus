@@ -3,6 +3,7 @@ require "rack/test"
 require "tempfile"
 
 class TestApp < Minitest::Test
+  include Domus
   include Rack::Test::Methods
 
   def app
@@ -21,8 +22,8 @@ class TestApp < Minitest::Test
 
   def wipe
     domus.db[:asset_attachments].delete
-    domus.db[:assets].delete
-    domus.db[:files].delete
+    Asset.dataset.delete
+    Upload.dataset.delete
   end
 
   def test_root_renders_home
@@ -34,9 +35,8 @@ class TestApp < Minitest::Test
 
   def test_root_lists_recent_assets_newest_first
     wipe
-    now = Time.now
-    domus.db[:assets].insert(name: "Older asset", created_at: now - 86_400)
-    domus.db[:assets].insert(name: "Newer asset", created_at: now)
+    Asset.create(name: "Older asset")
+    Asset.create(name: "Newer asset")
 
     get "/"
     assert_equal 200, last_response.status
@@ -47,11 +47,11 @@ class TestApp < Minitest::Test
   end
 
   def test_root_links_each_asset_to_its_detail_page
-    id = domus.db[:assets].insert(name: "Laptop", created_at: Time.now)
+    asset = Asset.create(name: "Laptop")
 
     get "/"
     assert_equal 200, last_response.status
-    assert_includes last_response.body, %(href="/assets/#{id}")
+    assert_includes last_response.body, %(href="/assets/#{asset.id}")
   end
 
   def test_root_empty_state
@@ -73,9 +73,9 @@ class TestApp < Minitest::Test
   end
 
   def test_asset_detail_renders_title
-    id = domus.db[:assets].insert(name: "Bosch 800 dishwasher", created_at: Time.now)
+    asset = Asset.create(name: "Bosch 800 dishwasher")
 
-    get "/assets/#{id}"
+    get "/assets/#{asset.id}"
     assert_equal 200, last_response.status
     body = last_response.body
     assert_includes body, "Bosch 800 dishwasher"
@@ -83,13 +83,12 @@ class TestApp < Minitest::Test
   end
 
   def test_asset_detail_renders_description
-    id = domus.db[:assets].insert(
+    asset = Asset.create(
       name: "Bosch 800 dishwasher",
-      description: "Stainless interior, third rack.\n\nReplaces the GE that flooded.",
-      created_at: Time.now
+      description: "Stainless interior, third rack.\n\nReplaces the GE that flooded."
     )
 
-    get "/assets/#{id}"
+    get "/assets/#{asset.id}"
     assert_equal 200, last_response.status
     body = last_response.body
     assert_includes body, "Stainless interior, third rack."
@@ -97,9 +96,9 @@ class TestApp < Minitest::Test
   end
 
   def test_asset_detail_omits_description_when_absent
-    id = domus.db[:assets].insert(name: "Untitled", created_at: Time.now)
+    asset = Asset.create(name: "Untitled")
 
-    get "/assets/#{id}"
+    get "/assets/#{asset.id}"
     assert_equal 200, last_response.status
     refute_includes last_response.body, 'class="desc"'
   end
@@ -110,20 +109,19 @@ class TestApp < Minitest::Test
   end
 
   def test_asset_detail_renders_attached_images
-    now = Time.now
-    asset_id = domus.db[:assets].insert(name: "Dishwasher", created_at: now)
-    file_id = domus.db[:files].insert(extension: ".png", created_at: now)
-    domus.db[:asset_attachments].insert(asset_id:, file_id:, created_at: now)
+    asset = Asset.create(name: "Dishwasher")
+    upload = Upload.create(extension: ".png")
+    asset.add_upload(upload)
 
-    get "/assets/#{asset_id}"
+    get "/assets/#{asset.id}"
     assert_equal 200, last_response.status
-    assert_includes last_response.body, %(src="/files/#{file_id}.png")
+    assert_includes last_response.body, %(src="/uploads/#{upload.id}.png")
   end
 
   def test_asset_detail_without_images_shows_photos_add_affordance
-    id = domus.db[:assets].insert(name: "Bare", created_at: Time.now)
+    asset = Asset.create(name: "Bare")
 
-    get "/assets/#{id}"
+    get "/assets/#{asset.id}"
     assert_equal 200, last_response.status
     # The photos section always renders (with the add affordance); there
     # just aren't any <img> tiles when nothing is attached.
@@ -132,10 +130,10 @@ class TestApp < Minitest::Test
   end
 
   def test_get_file_serves_stored_image
-    post "/files", "file" => upload("photo.png", "image/png", "fake-png-bytes")
-    file = domus.db[:files].order(:id).last
+    post "/uploads", "file" => upload("photo.png", "image/png", "fake-png-bytes")
+    upload_record = Upload.order(:id).last
 
-    get "/files/#{file[:id]}#{file[:extension]}"
+    get "/uploads/#{upload_record.id}#{upload_record.extension}"
     assert_equal 200, last_response.status
     assert_equal "image/png", last_response.headers["Content-Type"]
     assert_includes last_response.headers["Cache-Control"].to_s, "immutable"
@@ -148,93 +146,122 @@ class TestApp < Minitest::Test
   end
 
   def test_upload_image_saves_file_and_redirects
-    before = domus.db[:files].count
-    post "/files", "file" => upload("photo.png", "image/png", "fake-png-bytes")
+    before = Upload.count
+    post "/uploads", "file" => upload("photo.png", "image/png", "fake-png-bytes")
 
     assert_equal 302, last_response.status
-    assert_equal before + 1, domus.db[:files].count
-    row = domus.db[:files].order(:id).last
-    assert_equal ".png", row[:extension]
-    assert_equal "fake-png-bytes", File.read(domus.file_path(row))
+    assert_equal before + 1, Upload.count
+    upload_record = Upload.order(:id).last
+    assert_equal ".png", upload_record.extension
+    assert_equal "fake-png-bytes", File.read(domus.file_path(id: upload_record.id, extension: upload_record.extension))
   end
 
   def test_upload_without_file_is_rejected
-    before = domus.db[:files].count
-    post "/files", {}
+    before = Upload.count
+    post "/uploads", {}
 
     assert_equal 422, last_response.status
-    assert_equal before, domus.db[:files].count
+    assert_equal before, Upload.count
   end
 
   def test_upload_rejects_non_image
-    before = domus.db[:files].count
-    post "/files", "file" => upload("notes.txt", "text/plain", "hello")
+    before = Upload.count
+    post "/uploads", "file" => upload("notes.txt", "text/plain", "hello")
 
     assert_equal 422, last_response.status
-    assert_equal before, domus.db[:files].count
+    assert_equal before, Upload.count
   end
 
   def test_upload_rejects_unsupported_extension
-    before = domus.db[:files].count
-    post "/files", "file" => upload("sketch.svg", "image/svg+xml", "<svg/>")
+    before = Upload.count
+    post "/uploads", "file" => upload("sketch.svg", "image/svg+xml", "<svg/>")
 
     assert_equal 422, last_response.status
-    assert_equal before, domus.db[:files].count
+    assert_equal before, Upload.count
   end
 
   def test_upload_rejects_oversized_file
-    before = domus.db[:files].count
+    before = Upload.count
     oversized = "x" * (Domus::Web::MAX_UPLOAD_BYTES + 1)
-    post "/files", "file" => upload("huge.png", "image/png", oversized)
+    post "/uploads", "file" => upload("huge.png", "image/png", oversized)
 
     assert_equal 422, last_response.status
-    assert_equal before, domus.db[:files].count
+    assert_equal before, Upload.count
   end
 
   def test_upload_with_asset_name_creates_asset_and_attachment
-    before = domus.db[:assets].count
-    post "/files", "file" => upload("photo.png", "image/png", "bytes"), "asset_names[]" => "Laptop"
+    before = Asset.count
+    post "/uploads", "file" => upload("photo.png", "image/png", "bytes"), "asset_names[]" => "Laptop"
 
     assert_equal 302, last_response.status
-    assert_equal before + 1, domus.db[:assets].count
-    asset = domus.db[:assets].order(:id).last
-    assert_equal "Laptop", asset[:name]
-    file = domus.db[:files].order(:id).last
-    attachment = domus.db[:asset_attachments].where(asset_id: asset[:id]).first
-    refute_nil attachment
-    assert_equal file[:id], attachment[:file_id]
+    assert_equal before + 1, Asset.count
+    asset = Asset.order(:id).last
+    assert_equal "Laptop", asset.name
+    upload_record = Upload.order(:id).last
+    assert_includes asset.uploads, upload_record
   end
 
   def test_upload_with_multiple_asset_names_creates_all
-    assets_before = domus.db[:assets].count
-    attachments_before = domus.db[:asset_attachments].count
-    post "/files", "file" => upload("photo.png", "image/png", "bytes"),
+    assets_before = Asset.count
+    post "/uploads", "file" => upload("photo.png", "image/png", "bytes"),
       "asset_names[]" => ["Camera", "Laptop"]
 
     assert_equal 302, last_response.status
-    assert_equal assets_before + 2, domus.db[:assets].count
-    assert_equal attachments_before + 2, domus.db[:asset_attachments].count
+    assert_equal assets_before + 2, Asset.count
+    assert_equal 2, Upload.order(:id).last.assets.count
   end
 
   def test_upload_with_blank_asset_names_ignored
-    assets_before = domus.db[:assets].count
-    attachments_before = domus.db[:asset_attachments].count
-    post "/files", "file" => upload("photo.png", "image/png", "bytes"),
+    assets_before = Asset.count
+    post "/uploads", "file" => upload("photo.png", "image/png", "bytes"),
       "asset_names[]" => ["", "  "]
 
     assert_equal 302, last_response.status
-    assert_equal assets_before, domus.db[:assets].count
-    assert_equal attachments_before, domus.db[:asset_attachments].count
+    assert_equal assets_before, Asset.count
   end
 
   def test_upload_without_asset_names_creates_no_assets
-    assets_before = domus.db[:assets].count
-    attachments_before = domus.db[:asset_attachments].count
-    post "/files", "file" => upload("photo.png", "image/png", "bytes")
+    assets_before = Asset.count
+    post "/uploads", "file" => upload("photo.png", "image/png", "bytes")
 
     assert_equal 302, last_response.status
-    assert_equal assets_before, domus.db[:assets].count
-    assert_equal attachments_before, domus.db[:asset_attachments].count
+    assert_equal assets_before, Asset.count
+  end
+
+  def test_asset_validates_presence_of_name
+    asset = Asset.new(name: "")
+    refute asset.valid?
+    assert_raises(Sequel::ValidationFailed) { asset.save }
+  end
+
+  def test_upload_validates_presence_of_extension
+    upload_record = Upload.new(extension: "")
+    refute upload_record.valid?
+    assert_raises(Sequel::ValidationFailed) { upload_record.save }
+  end
+
+  def test_upload_validates_image_extension
+    upload_record = Upload.new(extension: ".pdf")
+    refute upload_record.valid?
+    assert_raises(Sequel::ValidationFailed) { upload_record.save }
+  end
+
+  def test_asset_uploads_returns_uploads_oldest_first
+    asset = Asset.create(name: "Dishwasher")
+    oldest = Upload.create(extension: ".png")
+    newest = Upload.create(extension: ".jpg")
+    asset.add_upload(oldest)
+    sleep 0.01
+    asset.add_upload(newest)
+
+    uploads = asset.uploads
+    assert_equal 2, uploads.length
+    assert_equal oldest.id, uploads.first.id
+  end
+
+  def test_validation_failed_returns_422
+    post "/uploads", "file" => upload("notes.txt", "text/plain", "hello")
+    assert_equal 422, last_response.status
   end
 
   private

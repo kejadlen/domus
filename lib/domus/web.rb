@@ -23,11 +23,11 @@ module Domus
   class Web < Roda
     plugin :public
 
-    # Serve stored uploads (storage/files/{id}{ext}) at /files/ straight off
-    # disk. The :static plugin needs a concrete root at load time, so it reads
-    # the shared Domus.config (the same instance App uses). Uploads are
+    # Serve stored uploads (storage/uploads/{id}{ext}) at /uploads/ straight
+    # off disk. The :static plugin needs a concrete root at load time, so it
+    # reads the shared Domus.config (the same instance App uses). Uploads are
     # immutable once stored, so they cache indefinitely.
-    plugin :static, ["/files/"],
+    plugin :static, ["/uploads/"],
       root: Domus.config.storage_path.to_s,
       cache_control: "private, max-age=31536000, immutable"
 
@@ -40,12 +40,14 @@ module Domus
       when Sequel::NoMatchingRow
         response.status = 404
         "Not found."
+      when Sequel::ValidationFailed
+        response.status = 422
+        e.message
       else
         raise e
       end
     end
 
-    IMAGE_EXTENSIONS = %w[.jpg .jpeg .png .gif .webp .heic .heif].freeze
     MAX_UPLOAD_BYTES = 25 * 1024 * 1024
 
     route do |r|
@@ -53,21 +55,21 @@ module Domus
 
       r.root do
         r.get do
-          assets = db[:assets].order(Sequel.desc(:created_at), Sequel.desc(:id)).limit(12).all
-          Views::Home.new(assets:, total: db[:assets].count).call
+          assets = Asset.order(Sequel.desc(:created_at), Sequel.desc(:id)).limit(12).all
+          Views::Home.new(assets:, total: Asset.count).call
         end
       end
 
-      # POST /files has no CSRF token check. Domus authenticates via the
+      # POST /uploads has no CSRF token check. Domus authenticates via the
       # reverse proxy's trusted X-Forwarded-User header (see
       # lib/middleware/auth.rb), not cookie sessions, so there's no ambient
       # credential a forged cross-site POST could ride on. If this app ever
       # adopts cookie-based sessions, load the Roda :route_csrf plugin and
       # verify the token here before accepting the upload.
-      # GET /files/:filename (the stored uploads) is served straight off disk
-      # by the :static middleware configured above. POST /files stays on the
-      # route.
-      r.on "files" do
+      # GET /uploads/:filename (the stored uploads) is served straight off
+      # disk by the :static middleware configured above. POST /uploads stays
+      # on the route.
+      r.on "uploads" do
         r.post do
           save_file(r.params)
           r.redirect "/"
@@ -79,8 +81,8 @@ module Domus
           r.get do
             # .sole raises Sequel::NoMatchingRow when the id is unknown; the
             # error_handler above turns that into a 404.
-            asset = db[:assets].where(id:).sole
-            Views::Asset.new(asset:, images: asset_images(id)).call
+            asset = Asset.where(id:).sole
+            Views::Asset.new(asset:, images: asset.uploads).call
           end
         end
       end
@@ -93,16 +95,6 @@ module Domus
     # : () -> Sequel::Database
     def db = app.db
 
-    # Files attached to an asset, oldest first, as {id:, extension:} rows.
-    def asset_images(asset_id)
-      db[:asset_attachments]
-        .where(asset_id:)
-        .join(:files, id: :file_id)
-        .order(Sequel[:asset_attachments][:created_at], Sequel[:files][:id])
-        .select(Sequel[:files][:id], Sequel[:files][:extension])
-        .all
-    end
-
     # Persists an uploaded image, raising ClientError when the upload is
     # rejected so the error_handler plugin can render the right status.
     # : (Hash[String, untyped]) -> void
@@ -114,23 +106,17 @@ module Domus
       # The browser-supplied type is spoofable, so also require a known
       # image extension before we trust and store the file.
       ext = ::File.extname(upload[:filename].to_s).downcase
-      raise ClientError, "That image format isn't supported." unless IMAGE_EXTENSIONS.include?(ext)
+      raise ClientError, "That image format isn't supported." unless Upload::IMAGE_EXTENSIONS.include?(ext)
       raise ClientError, "That image is too large (25 MB max)." if upload[:tempfile].size > MAX_UPLOAD_BYTES
 
       asset_names = Array(params["asset_names"]).flatten.map(&:strip).reject(&:empty?)
 
       db.transaction do
-        file_id = db[:files].insert(extension: ext, created_at: Time.now)
-
-        dest = app.file_path(id: file_id, extension: ext)
+        upload_record = Upload.create(extension: ext)
+        dest = app.file_path(id: upload_record.id, extension: ext)
         FileUtils.mkdir_p(::File.dirname(dest))
         FileUtils.cp(upload[:tempfile].path, dest)
-
-        now = Time.now
-        asset_names.each do |name|
-          asset_id = db[:assets].insert(name: name, created_at: now)
-          db[:asset_attachments].insert(asset_id: asset_id, file_id: file_id, created_at: now)
-        end
+        asset_names.each { |name| Asset.create(name:).add_upload(upload_record) }
       end
     end
   end

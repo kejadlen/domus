@@ -1,28 +1,23 @@
 require_relative "test_helper"
 
 class TestSole < Minitest::Test
-  def db = Domus::Web.opts.fetch(:app).db
-
-  def setup
-    db[:asset_attachments].delete
-    db[:assets].delete
-  end
+  include Domus
 
   def test_sole_returns_the_single_matching_row
-    id = db[:assets].insert(name: "Only", created_at: Time.now)
-    assert_equal "Only", db[:assets].where(id:).sole[:name]
+    asset = Asset.create(name: "Only")
+    assert_equal "Only", Asset.where(id: asset.id).sole.name
   end
 
   def test_sole_raises_when_no_rows_match
     assert_raises(Sequel::NoMatchingRow) do
-      db[:assets].where(id: 999_999).sole
+      Asset.where(id: 999_999).sole
     end
   end
 
   def test_sole_raises_when_multiple_rows_match
-    db[:assets].insert(name: "A", created_at: Time.now)
-    db[:assets].insert(name: "B", created_at: Time.now)
+    Asset.create(name: "A")
+    Asset.create(name: "B")
 
-    assert_raises(Sequel::Sole::TooManyRows) { db[:assets].sole }
+    assert_raises(Sequel::Plugins::Sole::TooManyRows) { Asset.dataset.sole }
   end
 end

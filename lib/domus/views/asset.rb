@@ -15,6 +15,7 @@ module Domus
     class Asset < Phlex::HTML
       include Icons
 
+      # : (asset: Asset, ?images: Array[Upload]) -> void
       def initialize(asset:, images: [])
         @asset = asset
         @images = images
@@ -99,9 +100,9 @@ module Domus
         section(class: "panel") do
           div(class: "panel-h") { h3(class: "sub") { plain "Photos" } }
           div(class: "photos") do
-            @images.each do |file|
+            @images.each do |upload|
               div(class: "shot") do
-                img(src: "/files/#{file[:id]}#{file[:extension]}", alt: "Photo of #{@asset[:name]}", loading: "lazy")
+                img(src: "/uploads/#{upload[:id]}#{upload[:extension]}", alt: "Photo of #{@asset[:name]}", loading: "lazy")
               end
             end
             button(type: "button", class: "addphoto") { icon("camera"); plain "add" }

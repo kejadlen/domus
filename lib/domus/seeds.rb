@@ -90,15 +90,14 @@ module Domus
       ASSETS.flat_map(&:photos).uniq.each(&:fetch)
 
       db.transaction do
-        now = Time.now
-        ASSETS.each do |asset|
-          asset_id = db[:assets].insert(name: asset.name, description: asset.description, created_at: now)
-          asset.photos.each do |photo|
-            file_id = db[:files].insert(extension: ".jpg", created_at: now)
-            dest = app.file_path(id: file_id, extension: ".jpg")
+        ASSETS.each do |seed_asset|
+          asset_record = Domus::Asset.create(name: seed_asset.name, description: seed_asset.description)
+          seed_asset.photos.each do |photo|
+            upload = Domus::Upload.create(extension: ".jpg")
+            dest = app.file_path(id: upload.id, extension: ".jpg")
             FileUtils.mkdir_p(dest.dirname)
             FileUtils.cp(photo.cache_path, dest)
-            db[:asset_attachments].insert(asset_id:, file_id:, created_at: now)
+            asset_record.add_upload(upload)
           end
         end
       end

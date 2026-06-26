@@ -4,6 +4,8 @@
 module Sequel
   def self.sqlite: (String) -> Sequel::Database
   def self.desc: (Symbol) -> untyped
+  def self.[]: (Symbol) -> untyped
+  CURRENT_TIMESTAMP: String
 
   class Database
     def []: (Symbol) -> Sequel::Dataset
@@ -16,9 +18,43 @@ module Sequel
     def all: () -> Array[Hash[Symbol, untyped]]
     def count: () -> Integer
     def insert: (Hash[Symbol, untyped]) -> Integer
+    def delete: () -> Integer
+    def where: (*untyped) -> Sequel::Dataset
   end
 
   class Model
+    def self.plugin: (Symbol, **untyped) -> void
+    def self.count: () -> Integer
+    def self.order: (*untyped) -> Sequel::Dataset
+    def self.where: (*untyped) -> Sequel::Dataset
+    def self.create: (**untyped) -> instance
+    def self.dataset: () -> Sequel::Dataset
+    def self.many_to_many: (Symbol, **untyped) -> void
+    def self.validates_presence: (Symbol) -> void
+    def self.validates_includes: (Array[String], Symbol) -> void
+    def self.sole: () -> instance
+    def self.db=: (Database) -> void
+    def self.inherited: (Class) -> void
+    def add_upload: (untyped) -> void
+    def uploads: () -> Array[untyped]
+    def assets: () -> Array[untyped]
+    def id: () -> Integer
+    def name: () -> String
+    def extension: () -> String
+    def description: () -> String
+    def valid?: () -> bool
+    def save: () -> untyped
+  end
+
+  def self.Model: (Symbol) -> class
+
+  class Error
+  end
+
+  class ValidationFailed < Error
+  end
+
+  class NoMatchingRow < Error
   end
 end
 
@@ -34,6 +70,38 @@ class Roda
 end
 
 module Domus
+  class Asset < Sequel::Model
+    def self.plugin: (Symbol, **untyped) -> void
+    def self.many_to_many: (Symbol, **untyped) -> void
+    def validates_presence: (Symbol) -> void
+    def self.create: (**untyped) -> instance
+    def valid?: () -> bool
+    def save: () -> untyped
+    def uploads: () -> Array[untyped]
+    def assets: () -> Array[untyped]
+    def add_upload: (untyped) -> void
+    def id: () -> Integer
+    def name: () -> String
+    def extension: () -> String
+    def description: () -> String
+    def created_at: () -> untyped
+  end
+
+  class Upload < Sequel::Model
+    def self.plugin: (Symbol, **untyped) -> void
+    def self.many_to_many: (Symbol, **untyped) -> void
+    def validates_presence: (Symbol) -> void
+    def validates_includes: (Array[String], Symbol) -> void
+    def self.create: (**untyped) -> instance
+    def valid?: () -> bool
+    def save: () -> untyped
+    def uploads: () -> Array[untyped]
+    def assets: () -> Array[untyped]
+    def id: () -> Integer
+    def extension: () -> String
+    def created_at: () -> untyped
+  end
+
   module Views
     module Icons
       def raw: (String) -> void

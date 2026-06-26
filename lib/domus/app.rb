@@ -11,15 +11,15 @@ module Domus
     def initialize(config = Domus.config)
       @config = config
       @db = Sequel.sqlite(config.database_url)
-      @db.extension(:sole)
+      Sequel::Model.db = @db
     end
 
     # : (Hash[Symbol, untyped]) -> Pathname
     def file_path(record)
-      files_root / "#{record[:id]}#{record[:extension]}"
+      uploads_root / "#{record[:id]}#{record[:extension]}"
     end
 
     # : () -> Pathname
-    def files_root = config.storage_path / "files"
+    def uploads_root = config.storage_path / "uploads"
   end
 end
