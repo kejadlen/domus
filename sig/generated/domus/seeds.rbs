@@ -62,8 +62,8 @@ module Domus
     # Seeds the database when it's empty, returning true when it inserted data
     # and false when assets already exist. The empty check keeps repeated dev
     # runs and CI idempotent.
-    # : (App) -> bool
-    def self.call: (untyped app) -> untyped
+    # : () -> bool
+    def self.call: () -> untyped
 
     # The XDG cache directory for downloaded seed photos.
     # : () -> Pathname

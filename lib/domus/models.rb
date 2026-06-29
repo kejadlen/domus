@@ -1,6 +1,7 @@
 # rbs_inline: enabled
 
 require "sequel"
+require_relative "db"
 
 Sequel::Model.plugin :sole
 
@@ -33,6 +34,10 @@ module Domus
       validates_presence :extension
       validates_includes IMAGE_EXTENSIONS, :extension
     end
+
+    # Where this upload's blob lives on disk.
+    #: () -> Pathname
+    def file_path = Domus.config.uploads_root / "#{id}#{extension}"
   end
 
   class Document < Sequel::Model

@@ -1,15 +1,15 @@
 # Put lib/ on the load path so plain requires and Sequel's extension loader
 # (db.extension(:sole) -> require "sequel/extensions/sole") resolve. The test
-# task adds lib/ for the spawned test run, but this Rakefile also builds an App
-# at load time for the db: tasks, which runs in the bare rake process.
+# task adds lib/ for the spawned test run, but this Rakefile also opens the
+# database connection at load time for the db: tasks, which runs in the bare
+# rake process.
 $LOAD_PATH.unshift(File.expand_path("lib", __dir__))
 
 require "minitest/test_task"
-require "domus/app"
+require "domus/db"
 require "sequel/extensions/migration"
 
-DOMUS_APP = Domus::App.new
-DB = DOMUS_APP.db
+DB = Domus::DB
 
 desc "Create bundler binstubs (runs when Gemfile.lock changes)"
 file ".direnv/.bundled" => ["Gemfile.lock"] do
@@ -61,7 +61,7 @@ namespace :db do
 
   desc "Seed the database with development data"
   task :seed do
-    require "seeds"
-    puts Domus::Seeds.call(DOMUS_APP) ? "Seeded." : "Already seeded."
+    require "domus/seeds"
+    puts Domus::Seeds.call ? "Seeded." : "Already seeded."
   end
 end

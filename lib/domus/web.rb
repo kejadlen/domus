@@ -2,7 +2,7 @@
 
 require "roda"
 require "fileutils"
-require_relative "config"
+require_relative "models"
 require_relative "views/layout"
 require_relative "views/home"
 require_relative "views/asset"
@@ -25,7 +25,7 @@ module Domus
 
     # Serve stored uploads (storage/uploads/{id}{ext}) at /uploads/ straight
     # off disk. The :static plugin needs a concrete root at load time, so it
-    # reads the shared Domus.config (the same instance App uses). Uploads are
+    # reads the shared Domus.config resolved from the environment. Uploads are
     # immutable once stored, so they cache indefinitely.
     plugin :static, ["/uploads/"],
       root: Domus.config.storage_path.to_s,
@@ -90,11 +90,6 @@ module Domus
 
     private
 
-    # : () -> App
-    def app = opts.fetch(:app)
-    # : () -> Sequel::Database
-    def db = app.db
-
     # Persists an uploaded image, raising ClientError when the upload is
     # rejected so the error_handler plugin can render the right status.
     # : (Hash[String, untyped]) -> void
@@ -111,9 +106,9 @@ module Domus
 
       asset_names = Array(params["asset_names"]).flatten.map(&:strip).reject(&:empty?)
 
-      db.transaction do
+      DB.transaction do
         upload_record = Upload.create(extension: ext)
-        dest = app.file_path(id: upload_record.id, extension: ext)
+        dest = upload_record.file_path
         FileUtils.mkdir_p(::File.dirname(dest))
         FileUtils.cp(upload[:tempfile].path, dest)
         asset_names.each { |name| Asset.create(name:).add_upload(upload_record) }

@@ -15,12 +15,6 @@ module Domus
 
     private
 
-    # : () -> App
-    def app: () -> untyped
-
-    # : () -> Sequel::Database
-    def db: () -> untyped
-
     # Persists an uploaded image, raising ClientError when the upload is
     # rejected so the error_handler plugin can render the right status.
     # : (Hash[String, untyped]) -> void

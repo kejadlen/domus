@@ -10,18 +10,16 @@ class TestApp < Minitest::Test
     Domus::Web
   end
 
-  def domus = Domus::Web.opts.fetch(:app)
-
   # Every test starts from the shared seed baseline, so dev and the suite
   # exercise the same Domus::Seeds path. Tests that need a clean slate call
   # #wipe; tests that assert on counts compare deltas around the action.
   def setup
     wipe
-    Domus::Seeds.call(domus)
+    Domus::Seeds.call
   end
 
   def wipe
-    domus.db[:asset_attachments].delete
+    Domus::DB[:asset_attachments].delete
     Asset.dataset.delete
     Upload.dataset.delete
   end
@@ -153,7 +151,7 @@ class TestApp < Minitest::Test
     assert_equal before + 1, Upload.count
     upload_record = Upload.order(:id).last
     assert_equal ".png", upload_record.extension
-    assert_equal "fake-png-bytes", File.read(domus.file_path(id: upload_record.id, extension: upload_record.extension))
+    assert_equal "fake-png-bytes", File.read(upload_record.file_path)
   end
 
   def test_upload_without_file_is_rejected

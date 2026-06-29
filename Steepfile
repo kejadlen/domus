@@ -1,7 +1,7 @@
 target :lib do
   signature "sig"
   check "lib/domus/config.rb"
-  check "lib/domus/app.rb"
+  check "lib/domus/db.rb"
   check "lib/domus/models.rb"
   check "lib/domus/relative_time.rb"
   check "lib/domus/views/layout.rb"

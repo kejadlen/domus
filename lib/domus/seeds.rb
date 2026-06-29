@@ -3,6 +3,7 @@
 require "fileutils"
 require "open-uri"
 require "pathname"
+require_relative "models"
 
 module Domus
   # Development and test seed data. Populates a few sample assets so a fresh
@@ -80,21 +81,20 @@ module Domus
     # Seeds the database when it's empty, returning true when it inserted data
     # and false when assets already exist. The empty check keeps repeated dev
     # runs and CI idempotent.
-    # : (App) -> bool
-    def self.call(app)
-      db = app.db
-      return false unless db[:assets].empty?
+    # : () -> bool
+    def self.call
+      return false unless Domus::DB[:assets].empty?
 
       # Warm the cache outside the transaction so a slow download doesn't hold
       # the write lock open.
       ASSETS.flat_map(&:photos).uniq.each(&:fetch)
 
-      db.transaction do
+      Domus::DB.transaction do
         ASSETS.each do |seed_asset|
           asset_record = Domus::Asset.create(name: seed_asset.name, description: seed_asset.description)
           seed_asset.photos.each do |photo|
             upload = Domus::Upload.create(extension: ".jpg")
-            dest = app.file_path(id: upload.id, extension: ".jpg")
+            dest = upload.file_path
             FileUtils.mkdir_p(dest.dirname)
             FileUtils.cp(photo.cache_path, dest)
             asset_record.add_upload(upload)
