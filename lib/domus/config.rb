@@ -21,12 +21,18 @@ module Domus
   end
 
   class << self
-    # The process-wide config, resolved from the environment the first time
+    # The process-wide config, defaulting to the environment the first time
     # it's read. Loaded code reads this single instance: Web's :static plugin
-    # needs the storage path at load, and uploads are stored under it. Tests
-    # point it at a temp dir by setting DATABASE_URL / STORAGE_PATH before the
-    # config is first read.
+    # needs the storage path at load, and uploads are stored under it.
     #: () -> Config
     def config = @config ||= Config.env
+
+    # Override the config before it's first read. Tests assign a Config
+    # pointing at a temp dir; production leaves it unset and falls back to the
+    # environment.
+    #: (Config) -> void
+    def config=(config)
+      @config = config
+    end
   end
 end
